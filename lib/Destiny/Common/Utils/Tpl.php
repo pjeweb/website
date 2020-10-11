@@ -43,12 +43,12 @@ class Tpl {
         return "<title>$str</title>\r\n";
     }
 
-    public static function moment(DateTime $date, string $format = null, string $momentFormat = 'MMMM Do, h:mm:ss a, YYYY'): string {
-        return sprintf('<time title="%s" data-moment="true" datetime="%s" data-format="%s">%s</time>', $date->format(Date::STRING_FORMAT), $date->format(Date::FORMAT), $momentFormat, $date->format($format));
+    public static function moment(DateTime $date, string $format = null, string $jsFormat = 'MMMM do, h:mm:ss a, yyyy'): string {
+        return sprintf('<time title="%s" data-moment="true" datetime="%s" data-format="%s">%s</time>', $date->format(Date::STRING_FORMAT), $date->format(Date::FORMAT), $jsFormat, $date->format($format));
     }
 
-    public static function fromNow(DateTime $date, string $momentFormat = 'MMMM Do, h:mm:ss a, YYYY'): string {
-        return sprintf('<time title="%s" data-moment="true" data-moment-fromnow="true" datetime="%s" data-format="%s">%s</time>', $date->format(Date::STRING_FORMAT), $date->format(Date::FORMAT), $momentFormat, Date::getElapsedTime($date));
+    public static function fromNow(DateTime $date): string {
+        return sprintf('<time title="%s" data-moment="true" data-moment-fromnow="true" datetime="%s">%s</time>', $date->format(Date::STRING_FORMAT), $date->format(Date::FORMAT), Date::getElapsedTime($date));
     }
 
     public static function manifestScript(string $name, array $attr = []): string {

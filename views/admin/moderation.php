@@ -15,7 +15,7 @@ use Destiny\Common\Utils\Tpl;
     <?php include 'seg/admin.nav.php' ?>
 
     <section class="container">
-        <h3 id="income-dates">
+        <h3 id="moderation-dates">
             <span id="date-selector">
                 <a href='#'><i class='fas fa-arrow-left'></i></a> <span class='date'></span> <a href='#'><i class='fas fa-arrow-right'></i></a>
             </span>

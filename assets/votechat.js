@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import 'dgg-chat-gui/assets/chat/css/style.scss'
 import Chat from 'dgg-chat-gui/assets/chat/js/chat'
 
@@ -11,7 +10,9 @@ const chat = new Chat({
     banAppealUrl: script.getAttribute('data-ban-appeal-url')
 });
 
-$('body,html').css('background', 'transparent')
+document.documentElement.style.background = 'transparent'
+document.body.style.background = 'transparent'
+
 chat.withGui(`
     <div id="chat" class="chat votechat">
         <div id="chat-vote-frame"></div>

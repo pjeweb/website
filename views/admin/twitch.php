@@ -36,7 +36,7 @@ use Destiny\Common\Utils\Tpl;
                     <a href="/admin/user/<?=Tpl::out($this->user['userId'])?>/edit"><?=Tpl::out($this->user['username'])?></a>
                     <?php if(!empty($this->auth)): ?>
                         <span class="badge-pill badge-success">Authorized</span>
-                        <p>Last updated <?=Tpl::fromNow(Date::getDateTime($this->auth['createdDate']), Date::STRING_FORMAT_YEAR)?></p>
+                        <p>Last updated <?=Tpl::fromNow(Date::getDateTime($this->auth['createdDate']))?></p>
                     <?php else: ?>
                         <span class="badge-pill badge-danger">Unauthorized</span>
                     <?php endif; ?>

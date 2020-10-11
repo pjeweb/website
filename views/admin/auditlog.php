@@ -35,7 +35,7 @@ use Destiny\Common\Utils\Tpl;
                                 <a href="/admin/user/<?=$log['userid']?>/edit"><?=Tpl::out($log['username']) ?></a>
                             </td>
                             <td><?=Tpl::out($log['requesturi']) ?></td>
-                            <td><span class="text-muted">(<?=Tpl::fromNow(Date::getDateTime($log['timestamp']), Date::STRING_FORMAT) ?>)</span> <?=Tpl::moment(Date::getDateTime($log['timestamp']), Date::STRING_FORMAT) ?></td>
+                            <td><span class="text-muted">(<?=Tpl::fromNow(Date::getDateTime($log['timestamp'])) ?>)</span> <?=Tpl::moment(Date::getDateTime($log['timestamp']), Date::STRING_FORMAT) ?></td>
                         </tr>
                     <?php endforeach; ?>
                     <?php if(empty($this->logs)): ?>
