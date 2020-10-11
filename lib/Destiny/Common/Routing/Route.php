@@ -22,7 +22,7 @@ class Route {
         }
     }
 
-    function __sleep() {
+    public function __sleep() {
         return [
             'path',
             'class',

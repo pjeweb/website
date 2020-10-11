@@ -3,10 +3,10 @@ namespace Destiny\Common;
 
 abstract class MimeType {
     
-    const JSON = 'application/json';
-    const JAVASCRIPT = 'application/javascript';
-    const TEXT = 'text/plain';
-    const HTML = 'text/html';
-    const CSS = 'text/css';
+    public const JSON = 'application/json';
+    public const JAVASCRIPT = 'application/javascript';
+    public const TEXT = 'text/plain';
+    public const HTML = 'text/html';
+    public const CSS = 'text/css';
 
 }

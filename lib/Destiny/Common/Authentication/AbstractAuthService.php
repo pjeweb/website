@@ -19,22 +19,22 @@ abstract class AbstractAuthService extends Service {
     /**
      * @var string
      */
-    public $provider = null;
+    public $provider;
 
     /**
      * @var array
      */
-    public $defaultAuth = null;
+    public $defaultAuth;
 
     /**
      * @var array
      */
-    public $defaultUser = null;
+    public $defaultUser;
 
     /**
      * @var AbstractAuthHandler
      */
-    public $authHandler = null;
+    public $authHandler;
 
     public function getDefaultUserId(): int {
         return Config::$a[$this->provider]['dgg_user'];
@@ -73,22 +73,20 @@ abstract class AbstractAuthService extends Service {
      */
     protected function getValidAccessToken(): string {
         $auth = $this->getDefaultAuth();
-        if (!empty($auth) && !empty($auth['refreshToken'])) {
-            if ($this->authHandler->isTokenExpired($auth)) {
-                $data = $this->authHandler->renewToken($auth['refreshToken']);
-                try {
-                    $userAuthService = UserAuthService::instance();
-                    $userAuthService->updateUserAuth($auth['id'], [
-                        'accessToken' => $data['access_token'],
-                        'refreshToken' => $data['refresh_token'],
-                        'createdDate' => Date::getSqlDateTime(),
-                        'modifiedDate' => Date::getSqlDateTime()
-                    ]);
-                } catch (Exception $e) {
-                    Log::error("Error saving access token.", $auth);
-                }
-                return (string) $data['access_token'];
+        if (!empty($auth) && !empty($auth['refreshToken']) && $this->authHandler->isTokenExpired($auth)) {
+            $data = $this->authHandler->renewToken($auth['refreshToken']);
+            try {
+                $userAuthService = UserAuthService::instance();
+                $userAuthService->updateUserAuth($auth['id'], [
+                    'accessToken' => $data['access_token'],
+                    'refreshToken' => $data['refresh_token'],
+                    'createdDate' => Date::getSqlDateTime(),
+                    'modifiedDate' => Date::getSqlDateTime()
+                ]);
+            } catch (Exception $e) {
+                Log::error("Error saving access token.", $auth);
             }
+            return (string) $data['access_token'];
         }
         return !empty($auth) ? (string) $auth['accessToken'] : '';
     }

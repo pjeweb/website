@@ -89,7 +89,7 @@ class AdminThemesController {
             'active' => $params['active'],
             'color' => $params['color'],
         ]);
-        if (boolval($params['active'])) {
+        if ((bool)$params['active']) {
             $emoteService = EmoteService::instance();
             $emoteService->saveStaticFiles();
         }
@@ -123,7 +123,7 @@ class AdminThemesController {
             'active' => $params['active'],
             'color' => $params['color'],
         ]);
-        if (boolval($params['active'])) {
+        if ((bool)$params['active']) {
             $emoteService = EmoteService::instance();
             $emoteService->saveStaticFiles();
         }
@@ -148,7 +148,7 @@ class AdminThemesController {
                 Session::setErrorBag("Cannot delete the base theme.");
                 return "redirect: /admin/themes/{$params['id']}/edit";
             }
-            if (boolval($theme['active'])) {
+            if ((bool)$theme['active']) {
                 Session::setErrorBag("Cannot delete the active theme.");
                 return "redirect: /admin/themes/{$params['id']}/edit";
             }

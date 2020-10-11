@@ -2,7 +2,6 @@
 namespace Destiny\Common\Utils;
 
 use Destiny\Common\Application;
-use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Doctrine\DBAL\DBALException;
 

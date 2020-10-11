@@ -9,7 +9,7 @@ class RoutePathParser {
             $keys = self::getKeys($pattern);
             $values = self::getValues($pattern, $string);
             if (count($values) == count($keys)) {
-                for ($i = 0; $i < count($keys); ++$i) {
+                for ($i = 0, $iMax = count($keys); $i < $iMax; ++$i) {
                     $key = self::getKey($keys [$i]);
                     $params [self::getKeyName($key)] = self::getKeyValue($key, $values [$i]);
                 }
@@ -47,7 +47,7 @@ class RoutePathParser {
     }
 
     protected static function getKey($key) {
-        return substr($key, 1, strlen($key) - 2);
+        return substr($key, 1, -1);
     }
 
     protected static function getKeyName($key) {
@@ -63,7 +63,7 @@ class RoutePathParser {
     public static function getKeyValue($key, $value) {
         switch (self::getKeyType($key)) {
             case 'int' :
-                $value = intval($value);
+                $value = (int)$value;
                 break;
             default :
                 $value = (string)$value;

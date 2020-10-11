@@ -6,7 +6,7 @@ use Destiny\Common\Utils\Http;
 class Response {
 
     private $headers = [];
-    private $status = Http::STATUS_OK;
+    private $status;
     private $location = '';
     private $body;
 

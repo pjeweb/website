@@ -18,7 +18,7 @@ use Exception;
  */
 class AdminStreamElementsController extends AdminIntegrationController {
 
-    function afterConstruct() {
+    public function afterConstruct() {
         $this->authHandler = StreamElementsAuthHandler::instance();
         $this->authenticatedService = StreamElementsService::instance();
         $this->title = 'StreamElements';

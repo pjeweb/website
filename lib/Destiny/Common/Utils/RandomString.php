@@ -42,7 +42,7 @@ class RandomString {
         // Length in bits.
         $bits = (int)$log + 1;
         // Set all lower bits to 1.
-        $filter = (int)(1 << $bits) - 1;
+        $filter = (1 << $bits) - 1;
         do {
             $rnd = hexdec(bin2hex(openssl_random_pseudo_bytes($bytes)));
             // Discard irrelevant bits.

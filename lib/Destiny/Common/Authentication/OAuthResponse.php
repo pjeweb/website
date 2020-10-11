@@ -19,7 +19,7 @@ class OAuthResponse {
         Options::setOptions($this, $options);
     }
 
-    function __sleep() {
+    public function __sleep() {
         return [
             'username',
             'discriminator',

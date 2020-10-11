@@ -14,8 +14,8 @@ use RuntimeException;
  */
 class ImageService extends Service {
 
-    const MAX_FILE_SIZE = 10485760; // 10MB
-    const ALLOW_TYPES = [
+    public const MAX_FILE_SIZE = 10485760; // 10MB
+    public const ALLOW_TYPES = [
         'jpg' => 'image/jpeg',
         'png' => 'image/png',
         'gif' => 'image/gif'
@@ -24,7 +24,7 @@ class ImageService extends Service {
     /**
      * @throws DBException
      */
-    function insertImage(array $img, string $tag = ''): int {
+    public function insertImage(array $img, string $tag = ''): int {
         try {
             $conn = Application::getDbConn();
             $conn->insert('images', [
@@ -39,7 +39,7 @@ class ImageService extends Service {
                 'createdDate' => Date::getSqlDateTime(),
                 'modifiedDate' => Date::getSqlDateTime(),
             ]);
-            return intval($conn->lastInsertId());
+            return (int)$conn->lastInsertId();
         } catch (DBALException $e) {
             throw new DBException("Error inserting image.", $e);
         }
@@ -49,7 +49,7 @@ class ImageService extends Service {
      * @return array|false
      * @throws DBException
      */
-    function findImageById(int $id) {
+    public function findImageById(int $id) {
         try {
             $conn = Application::getDbConn();
             $stmt = $conn->prepare('SELECT * FROM `images` WHERE `id` = :id LIMIT 1');
@@ -64,7 +64,7 @@ class ImageService extends Service {
     /**
      * @throws DBException
      */
-    function removeImageById($id) {
+    public function removeImageById($id) {
         try {
             $conn = Application::getDbConn();
             $conn->delete('images', ['id' => $id]);
@@ -93,18 +93,18 @@ class ImageService extends Service {
         }
     }
 
-    function removeImageFile(array $image, string $path): bool {
+    public function removeImageFile(array $image, string $path): bool {
         return unlink($path . $image['name']);
     }
 
-    function copyImageFile(array $image, string $path): string {
+    public function copyImageFile(array $image, string $path): string {
         $ext = array_search($image['type'], self::ALLOW_TYPES, true);
         $newName = uniqid() . ".$ext";
         copy($path . $image['name'], $path . $newName);
         return $newName;
     }
 
-    function upload(array $upload, string $destination = null): array {
+    public function upload(array $upload, string $destination = null): array {
         try {
             // Undefined | Multiple Files | $_FILES Corruption Attack
             // If this request falls under any of them, treat it invalid.
@@ -137,12 +137,15 @@ class ImageService extends Service {
             $name = uniqid() . ".$ext"; // TODO collision
             $info = getimagesize($upload['tmp_name']);
 
-            if (!$info)
+            if (!$info) {
                 throw new RuntimeException('Failed to extract dimensions.');
-            if (is_file($destination . $name) && !unlink($destination . $name))
+            }
+            if (is_file($destination . $name) && !unlink($destination . $name)) {
                 throw new RuntimeException('Unable to remove file.');
-            if (!move_uploaded_file($upload['tmp_name'], $destination . $name))
+            }
+            if (!move_uploaded_file($upload['tmp_name'], $destination . $name)) {
                 throw new RuntimeException('Failed to move uploaded file.');
+            }
 
             return [
                 'label' => basename($upload["name"]),

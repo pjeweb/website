@@ -16,8 +16,8 @@ use Destiny\Common\Utils\Http;
  */
 class TwitchAuthHandler extends AbstractAuthHandler {
 
-    const GRANT_TYPE_USER = 'authorization_code';
-    const GRANT_TYPE_APP = 'client_credentials';
+    public const GRANT_TYPE_USER = 'authorization_code';
+    public const GRANT_TYPE_APP = 'client_credentials';
   
     private $authBase = 'https://id.twitch.tv/oauth2';
     public $authProvider = AuthProvider::TWITCH;
@@ -32,7 +32,7 @@ class TwitchAuthHandler extends AbstractAuthHandler {
         $conf = $this->getAuthProviderConf();
         return "$this->authBase/authorize?" . http_build_query([
                 'response_type' => 'code',
-                'scope'         => join(' ', $scope),
+                'scope'         => implode(' ', $scope),
                 'claims'        => $claims,
                 'force_verify'  => true,
                 'client_id'     => $conf['client_id'],
@@ -43,7 +43,7 @@ class TwitchAuthHandler extends AbstractAuthHandler {
     /**
      * @throws Exception
      */
-    function getToken(array $params): array {
+    public function getToken(array $params): array {
         FilterParams::required($params, 'grant_type');
 
         $conf = $this->getAuthProviderConf();
@@ -71,7 +71,7 @@ class TwitchAuthHandler extends AbstractAuthHandler {
             ],
             'form_params' => $form_params
         ]);
-        if($response->getStatusCode() == Http::STATUS_OK) {
+        if($response->getStatusCode() === Http::STATUS_OK) {
             $data = json_decode((string)$response->getBody(), true);
             FilterParams::required($data, 'access_token');
             return $data;
@@ -90,7 +90,7 @@ class TwitchAuthHandler extends AbstractAuthHandler {
                 'Authorization' => "Bearer $accessToken"
             ]
         ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
+        if ($response->getStatusCode() === Http::STATUS_OK) {
             $info = json_decode((string) $response->getBody(), true);
             if (empty($info)) {
                 throw new Exception ('Invalid user_info response');
@@ -103,7 +103,7 @@ class TwitchAuthHandler extends AbstractAuthHandler {
     /**
      * @throws Exception
      */
-    function mapTokenResponse(array $token): OAuthResponse {
+    public function mapTokenResponse(array $token): OAuthResponse {
         $data = $this->getUserInfo($token['access_token']);
         FilterParams::required($data, 'preferred_username');
         return new OAuthResponse([
@@ -114,14 +114,14 @@ class TwitchAuthHandler extends AbstractAuthHandler {
             'authId' => (string) $data['sub'],
             'authDetail' => $data['preferred_username'],
             'authEmail' => $data['email'] ?? '',
-            'verified' => boolval($data['email_verified'] ?? false),
+            'verified' => (bool)($data['email_verified'] ?? false),
         ]);
     }
 
     /**
      * @throws Exception
      */
-    function renewToken(string $refreshToken): array {
+    public function renewToken(string $refreshToken): array {
         throw new Exception("Not implemented");
         // TODO Implement
     }
@@ -132,7 +132,7 @@ class TwitchAuthHandler extends AbstractAuthHandler {
      *
      * @see https://dev.twitch.tv/docs/authentication/#validating-requests
      */
-    function validateToken(string $accessToken): bool {
+    public function validateToken(string $accessToken): bool {
         $client = $this->getHttpClient();
         $response = $client->get("$this->authBase/validate", [
             'headers' => [
@@ -141,6 +141,6 @@ class TwitchAuthHandler extends AbstractAuthHandler {
             ]
         ]);
 
-        return $response->getStatusCode() == Http::STATUS_OK;
+        return $response->getStatusCode() === Http::STATUS_OK;
     }
 }

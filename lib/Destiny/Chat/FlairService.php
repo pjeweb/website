@@ -16,7 +16,7 @@ use PDO;
  */
 class FlairService extends Service {
 
-    const FLAIRS_DIR = _BASEDIR . '/static/flairs/';
+    public const FLAIRS_DIR = _BASEDIR . '/static/flairs/';
 
     /**
      * @param $id
@@ -55,7 +55,7 @@ class FlairService extends Service {
                 'createdDate' => Date::getSqlDateTime(),
                 'modifiedDate' => Date::getSqlDateTime()
             ]);
-            return intval($conn->lastInsertId());
+            return (int)$conn->lastInsertId();
         } catch (DBALException $e) {
             throw new DBException("Error inserting flair.", $e);
         }
@@ -83,19 +83,19 @@ class FlairService extends Service {
              ORDER BY f.priority ASC, f.featureId DESC
          ');
             $stmt->execute();
-            return array_map(function($v) {
+            return array_map(static function($v) {
                 return [
                     'label' => $v['label'],
                     'name' => $v['name'],
-                    'hidden' => boolval($v['hidden']),
-                    'priority' => intval($v['priority']),
+                    'hidden' => (bool)$v['hidden'],
+                    'priority' => (int)$v['priority'],
                     'color' => $v['color'],
                     'image' => [[
                         'url' => Config::cdnv() . '/flairs/' . $v['image'],
                         'name' => $v['image'],
                         'mime' => $v['mime'],
-                        'height' => intval($v['height']),
-                        'width' => intval($v['width']),
+                        'height' => (int)$v['height'],
+                        'width' => (int)$v['width'],
                     ]],
                 ];
             }, $stmt->fetchAll());
@@ -107,12 +107,12 @@ class FlairService extends Service {
     /**
      * @throws DBException
      */
-    function getAllFlairNames(): array {
+    public function getAllFlairNames(): array {
         try {
             $conn = Application::getDbConn();
             $stmt = $conn->prepare('SELECT featureName FROM dfl_features');
             $stmt->execute();
-            return array_map(function($v){ return $v['featureName']; }, $stmt->fetchAll());
+            return array_map(static function($v){ return $v['featureName']; }, $stmt->fetchAll());
         } catch (DBALException $e) {
             throw new DBException("Error loading flairs.", $e);
         }
@@ -121,7 +121,7 @@ class FlairService extends Service {
     /**
      * @throws DBException
      */
-    function removeFlairById(int $id) {
+    public function removeFlairById(int $id) {
         try {
             $conn = Application::getDbConn();
             $conn->delete('dfl_features', ['featureId' => $id]);
@@ -133,7 +133,7 @@ class FlairService extends Service {
     /**
      * @throws DBException
      */
-    function findAllFlairs(): array {
+    public function findAllFlairs(): array {
         try {
             $conn = Application::getDbConn();
             $stmt = $conn->prepare('
@@ -159,7 +159,7 @@ class FlairService extends Service {
      * @return array|false
      * @throws DBException
      */
-    function findFlairById(int $id) {
+    public function findFlairById(int $id) {
         try {
             $conn = Application::getDbConn();
             $stmt = $conn->prepare('
@@ -186,7 +186,7 @@ class FlairService extends Service {
     /**
      * @throws DBException
      */
-    function findAvailableFlairNames(): array {
+    public function findAvailableFlairNames(): array {
         $features = $this->getAllFlairNames();
         $presets = [];
         for($i=1; $i<=64; $i++) {

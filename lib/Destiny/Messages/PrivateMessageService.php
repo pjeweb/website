@@ -21,8 +21,9 @@ class PrivateMessageService extends Service {
      * @throws DBException
      */
     public function canSend(SessionCredentials $user, int $targetuserid): bool {
-        if ($user->hasRole(UserRole::ADMIN))
+        if ($user->hasRole(UserRole::ADMIN)) {
             return true;
+        }
 
         $userid    = $user->getUserId();
         $now       = time();
@@ -42,12 +43,14 @@ class PrivateMessageService extends Service {
                 // immediately throttle if sent more than $messagelimit unread
                 // messages to the same $targetuserid in the last $timelimit minutes
                 // ONLY a reply can cancel this, otherwise it would `return false`
-                if ($row['targetuserid'] != $targetuserid)
+                if ($row['targetuserid'] != $targetuserid) {
                     continue;
+                }
                 
                 $target_unread_count += 1;
-                if($target_unread_count > $messagelimit && $now - $row['timestamp'] < $timelimit)
+                if($target_unread_count > $messagelimit && $now - $row['timestamp'] < $timelimit) {
                     $cansend = false;
+                }
                 
             } else if ( $row['userid'] == $targetuserid ) {
                 $target_unread_count -= $messagelimit;
@@ -56,8 +59,9 @@ class PrivateMessageService extends Service {
                 
                 // avoid rate limiting quick replies
                 // received a message in the last $timelimit minutes, reset
-                if ($now - $row['timestamp'] < $timelimit)
+                if ($now - $row['timestamp'] < $timelimit) {
                     return true;
+                }
             }else {
                 // $userid sent a message that was read OR
                 // $userid received a message from someone unrelated to this conversation
@@ -66,8 +70,9 @@ class PrivateMessageService extends Service {
         }
         // sent message count outweighs the received message count, deny
         // considering this is the last hour, and most people don't mark as read
-        if ( $target_unread_count > 7 || $general_unread_count > 21 )
+        if ( $target_unread_count > 7 || $general_unread_count > 21 ) {
             $cansend = false;
+        }
 
         return $cansend;
     }
@@ -114,7 +119,7 @@ class PrivateMessageService extends Service {
                 PDO::PARAM_STR,
                 PDO::PARAM_INT
             ]);
-            return intval($conn->lastInsertId());
+            return (int)$conn->lastInsertId();
         } catch (DBALException $e) {
             throw new DBException("Error inserting message.", $e);
         }

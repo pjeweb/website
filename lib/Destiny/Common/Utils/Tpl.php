@@ -34,7 +34,7 @@ class Tpl {
     }
 
     public static function title($title): string {
-        $title = trim("$title");
+        $title = trim((string)$title);
         if (!empty($title)) {
             $str = sprintf('%s - %s', $title, Config::$a['meta']['shortName']);
         } else {
@@ -53,7 +53,7 @@ class Tpl {
 
     public static function manifestScript(string $name, array $attr = []): string {
         $url = Config::cdn() . '/' . Config::$a['manifest'][$name];
-        $attribs = join(' ', array_map(function($v, $p) { return "$v=\"$p\""; }, array_keys($attr), $attr));
+        $attribs = implode(' ', array_map(static function($v, $p) { return "$v=\"$p\""; }, array_keys($attr), $attr));
         $str = !empty($attribs) ? " $attribs" : "";
         return "<script$str src=\"$url\"></script>\r\n";
     }
@@ -61,13 +61,13 @@ class Tpl {
     public static function manifestLink(string $name, array $attr = []): string {
         $url = Config::cdn() . '/' . Config::$a['manifest'][$name];
         $attr = array_merge(['rel' => 'stylesheet', 'media' => 'screen'], $attr);
-        $attribs = join(' ', array_map(function($v, $p) { return "$v=\"$p\""; }, array_keys($attr), $attr));
+        $attribs = implode(' ', array_map(static function($v, $p) { return "$v=\"$p\""; }, array_keys($attr), $attr));
         $str = !empty($attribs) ? " $attribs" : "";
         return "<link$str href=\"$url\">\r\n";
     }
 
     public static function ipLookupLink($ip): array {
-        return array_map(function($n) use ($ip) {
+        return array_map(static function($n) use ($ip) {
             $url = str_replace('{IP_ADDRESS}', urlencode($ip), $n['url']);
             $n['link'] = $url;
             return $n;

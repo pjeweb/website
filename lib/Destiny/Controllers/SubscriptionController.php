@@ -137,7 +137,7 @@ class SubscriptionController {
             }
 
             $note = $params['message'] ?? '';
-            if (!empty($message)) {
+            if (!empty($note)) {
                 DiscordMessenger::send('Subscription cancelled', [
                     'fields' => [
                         ['title' => 'User', 'value' => DiscordMessenger::userLink($creds->getUserId(), $creds->getUsername()), 'short' => false],
@@ -202,7 +202,7 @@ class SubscriptionController {
                 $currentSubType = $subscriptionsService->getSubscriptionType($currentSubscription['subscriptionType']);
 
                 if ($currentSubscription['status'] === SubscriptionStatus::ACTIVE) {
-                    $warningMessage = "You already have a {$currentSubType['tierLabel']} subscription! You can sub again, but only your highest tier sub will be visible.";    
+                    $warningMessage = "You already have a {$currentSubType['tierLabel']} subscription! You can sub again, but only your highest tier sub will be visible.";
                 } else { // SubscriptionStatus::PENDING
                     $warningMessage = "You already have a pending {$currentSubType['tierLabel']} subscription! Pending subs become active when their payment is processed.";
                 }

@@ -46,10 +46,14 @@ class ImageDownloadUtil {
         if (strlen($shard) <= 0) {
             Log::error("Invalid shard. $shard");
             return '';
-        } else if (empty($ext) || !in_array($ext, self::$ALLOWED_EXT)) {
+        }
+
+        if (empty($ext) || !in_array($ext, self::$ALLOWED_EXT)) {
             Log::error("File type not supported or invalid extension. $url");
             return '';
-        } else if (!file_exists($fullfolder) && !mkdir($fullfolder)) {
+        }
+
+        if (!file_exists($fullfolder) && !mkdir($fullfolder) && !is_dir($fullfolder)) {
             Log::error("Could not make shard sub-folder. $fullfolder");
             return '';
         }
@@ -92,7 +96,7 @@ class ImageDownloadUtil {
                 'sink' => $dest
             ]);
             $code = $r->getStatusCode();
-            if ($code == Http::STATUS_OK) {
+            if ($code === Http::STATUS_OK) {
                 return true;
             }
             Log::notice("Invalid http response code. [" . $code . "] $url");

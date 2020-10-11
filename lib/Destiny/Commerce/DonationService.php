@@ -19,7 +19,7 @@ class DonationService extends Service {
         try {
             $conn = Application::getDbConn();
             $conn->insert ( 'donations', $donation);
-            return intval($conn->lastInsertId());
+            return (int)$conn->lastInsertId();
         } catch (DBALException $e) {
             throw new DBException("Error adding donation.", $e);
         }

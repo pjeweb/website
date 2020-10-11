@@ -53,10 +53,7 @@ class Cookie {
     }
 
     public function getValue() {
-        if (isset ($_COOKIE[$this->name])) {
-            return $_COOKIE[$this->name];
-        }
-        return null;
+        return $_COOKIE[$this->name] ?? null;
     }
 
     public function setValue($value, $expiry) {

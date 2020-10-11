@@ -52,7 +52,7 @@ class ViewModel extends stdClass implements JsonSerializable {
     }
 
     public function __get(string $name) {
-        return (isset ($this->vars [$name])) ? $this->vars [$name] : null;
+        return $this->vars [$name] ?? null;
     }
 
     public function __isset(string $name): bool {

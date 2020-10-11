@@ -36,18 +36,25 @@ class AdminController {
      * @return string
      */
     public function admin() {
-        if (Session::hasRole(UserRole::FINANCE))
+        if (Session::hasRole(UserRole::FINANCE)) {
             return 'redirect: /admin/income';
-        else if (Session::hasRole(UserRole::MODERATOR))
+        }
+
+        if (Session::hasRole(UserRole::MODERATOR)) {
             return 'redirect: /admin/moderation';
-        else if (Session::hasRole(UserRole::EMOTES))
+        }
+        else if (Session::hasRole(UserRole::EMOTES)) {
             return 'redirect: /admin/emotes';
-        else if (Session::hasRole(UserRole::FLAIRS))
+        }
+        else if (Session::hasRole(UserRole::FLAIRS)) {
             return 'redirect: /admin/flairs';
-        else if (Session::hasRole(UserRole::ADMIN))
+        }
+        else if (Session::hasRole(UserRole::ADMIN)) {
             return 'redirect: /admin/dashboard';
-        else
-            return 'redirect: /'; // need an admin dashboard
+        }
+        else {
+            return 'redirect: /';
+        } // need an admin dashboard
     }
 
     /**
@@ -296,9 +303,9 @@ class AdminController {
             switch ($graphType) {
                 case 'REVENUELASTXDAYS':
                     FilterParams::required($params, 'days');
-                    $key = $graphType . intval($params['days']);
+                    $key = $graphType . (int)$params['days'];
                     if (!$cacheDriver->contains($key)) {
-                        $data = $statisticsService->getRevenueLastXDays(intval($params['days']));
+                        $data = $statisticsService->getRevenueLastXDays((int)$params['days']);
                         $cacheDriver->save($key, $data, 30);
                     } else {
                         $data = $cacheDriver->fetch($key);
@@ -306,9 +313,9 @@ class AdminController {
                     break;
                 case 'REVENUELASTXMONTHS':
                     FilterParams::required($params, 'months');
-                    $key = $graphType . intval($params['months']);
+                    $key = $graphType . (int)$params['months'];
                     if (!$cacheDriver->contains($key)) {
-                        $data = $statisticsService->getRevenueLastXMonths(intval($params['months']));
+                        $data = $statisticsService->getRevenueLastXMonths((int)$params['months']);
                         $cacheDriver->save($key, $data, 30);
                     } else {
                         $data = $cacheDriver->fetch($key);
@@ -316,9 +323,9 @@ class AdminController {
                     break;
                 case 'REVENUELASTXYEARS':
                     FilterParams::required($params, 'years');
-                    $key = $graphType . intval($params['years']);
+                    $key = $graphType . (int)$params['years'];
                     if (!$cacheDriver->contains($key)) {
-                        $data = $statisticsService->getRevenueLastXYears(intval($params['years']));
+                        $data = $statisticsService->getRevenueLastXYears((int)$params['years']);
                         $cacheDriver->save($key, $data, 30);
                     } else {
                         $data = $cacheDriver->fetch($key);
@@ -326,9 +333,9 @@ class AdminController {
                     break;
                 case 'NEWSUBSCRIBERSLASTXDAYS':
                     FilterParams::required($params, 'days');
-                    $key = $graphType . intval($params['days']);
+                    $key = $graphType . (int)$params['days'];
                     if (!$cacheDriver->contains($key)) {
-                        $data = $statisticsService->getNewSubscribersLastXDays(intval($params['days']));
+                        $data = $statisticsService->getNewSubscribersLastXDays((int)$params['days']);
                         $cacheDriver->save($key, $data, 30);
                     } else {
                         $data = $cacheDriver->fetch($key);
@@ -336,9 +343,9 @@ class AdminController {
                     break;
                 case 'NEWSUBSCRIBERSLASTXMONTHS':
                     FilterParams::required($params, 'months');
-                    $key = $graphType . intval($params['months']);
+                    $key = $graphType . (int)$params['months'];
                     if (!$cacheDriver->contains($key)) {
-                        $data = $statisticsService->getNewSubscribersLastXMonths(intval($params['months']));
+                        $data = $statisticsService->getNewSubscribersLastXMonths((int)$params['months']);
                         $cacheDriver->save($key, $data, 30);
                     } else {
                         $data = $cacheDriver->fetch($key);
@@ -346,9 +353,9 @@ class AdminController {
                     break;
                 case 'NEWSUBSCRIBERSLASTXYEARS':
                     FilterParams::required($params, 'years');
-                    $key = $graphType . intval($params['years']);
+                    $key = $graphType . (int)$params['years'];
                     if (!$cacheDriver->contains($key)) {
-                        $data = $statisticsService->getNewSubscribersLastXYears(intval($params['years']));
+                        $data = $statisticsService->getNewSubscribersLastXYears((int)$params['years']);
                         $cacheDriver->save($key, $data, 30);
                     } else {
                         $data = $cacheDriver->fetch($key);

@@ -16,7 +16,7 @@ use Destiny\Twitch\TwitchBroadcastAuthHandler;
  */
 class AdminTwitchController extends AdminIntegrationController {
 
-    function afterConstruct() {
+    public function afterConstruct() {
         $this->authHandler = TwitchBroadcastAuthHandler::instance();
         $this->authenticatedService = TwitchAdminService::instance();
         $this->title = 'Twitch Broadcaster';

@@ -60,12 +60,12 @@ abstract class Session {
 
     public static function hasRole(string $roleId): bool {
         $credentials = self::getCredentials();
-        return (!empty ($credentials) && $credentials->hasRole($roleId));
+        return ($credentials !== null && $credentials->hasRole($roleId));
     }
 
     public static function hasFeature(string $featureId): bool {
         $credentials = self::getCredentials();
-        return (!empty ($credentials) && $credentials->hasFeature($featureId));
+        return ($credentials !== null && $credentials->hasFeature($featureId));
     }
 
     public static function applyBags(ViewModel $model) {

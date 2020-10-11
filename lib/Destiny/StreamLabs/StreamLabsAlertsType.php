@@ -3,9 +3,9 @@ namespace Destiny\StreamLabs;
 
 class StreamLabsAlertsType {
 
-    const ALERT_FOLLOW = 'follow';
-    const ALERT_SUBSCRIPTION = 'subscription';
-    const ALERT_DONATION = 'donation';
-    const ALERT_HOST = 'host';
+    public const ALERT_FOLLOW = 'follow';
+    public const ALERT_SUBSCRIPTION = 'subscription';
+    public const ALERT_DONATION = 'donation';
+    public const ALERT_HOST = 'host';
 
 }

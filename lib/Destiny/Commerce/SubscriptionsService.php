@@ -23,7 +23,7 @@ class SubscriptionsService extends Service {
         try {
             $conn = Application::getDbConn();
             $conn->insert('dfl_users_subscriptions', $subscription);
-            return intval($conn->lastInsertId());
+            return (int)$conn->lastInsertId();
         } catch (DBALException $e) {
             throw new DBException("Error adding subscription", $e);
         }
@@ -90,7 +90,7 @@ class SubscriptionsService extends Service {
     /**
      * @return array||null
      */
-    public function getSubscriptionType(string $typeId): array {
+    public function getSubscriptionType(string $typeId): ?array {
         return Config::$a['commerce']['subscriptions'][$typeId] ?? null;
     }
 
@@ -242,7 +242,7 @@ class SubscriptionsService extends Service {
               LEFT JOIN dfl_users AS u2 ON (u2.userId = s.gifter)
             ';
             if (count($clauses) > 0) {
-                $q .= ' WHERE ' . join(' AND ', $clauses);
+                $q .= ' WHERE ' . implode(' AND ', $clauses);
             }
             $q.= ' ORDER BY s.createdDate DESC';
             $q.= ' LIMIT :start, :limit ';
@@ -252,7 +252,7 @@ class SubscriptionsService extends Service {
                 $stmt->bindValue('search', $params['search'], PDO::PARAM_STR);
             }
             if (!empty($params['recurring'])) {
-                $stmt->bindValue('recurring', intval($params['recurring']), PDO::PARAM_INT);
+                $stmt->bindValue('recurring', (int)$params['recurring'], PDO::PARAM_INT);
             }
             if (!empty($params['status'])) {
                 $stmt->bindValue('status', $params['status'], PDO::PARAM_STR);
@@ -328,9 +328,9 @@ class SubscriptionsService extends Service {
             $stmt->bindValue('start', $start, PDO::PARAM_INT);
             $stmt->execute();
             $gifts = $stmt->fetchAll();
-            for ($i = 0; $i < count($gifts); $i++) {
+            foreach ($gifts as $i => $iValue) {
                 // TODO possible to assign null to this.
-                $gifts[$i]['type'] = $this->getSubscriptionType($gifts [$i]['subscriptionType']);
+                $gifts[$i]['type'] = $this->getSubscriptionType($iValue['subscriptionType']);
             }
             return $gifts;
         } catch (DBALException $e) {
@@ -356,9 +356,9 @@ class SubscriptionsService extends Service {
             $stmt->bindValue('status', $status, PDO::PARAM_STR);
             $stmt->execute();
             $gifts = $stmt->fetchAll();
-            for ($i = 0; $i < count($gifts); $i++) {
+            foreach ($gifts as $i => $iValue) {
                 // TODO possible to assign null to this.
-                $gifts[$i]['type'] = $this->getSubscriptionType($gifts[$i]['subscriptionType']);
+                $gifts[$i]['type'] = $this->getSubscriptionType($iValue['subscriptionType']);
             }
             return $gifts;
         } catch (DBALException $e) {

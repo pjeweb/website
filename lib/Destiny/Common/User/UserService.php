@@ -8,7 +8,6 @@ use Destiny\Common\Exception;
 use Destiny\Common\Log;
 use Destiny\Common\Service;
 use Destiny\Common\Session\Session;
-use Destiny\Common\User\UserFeature;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\FilterParams;
 use Doctrine\DBAL\Connection;
@@ -23,12 +22,12 @@ class UserService extends Service {
     /**
      * @var array
      */
-    protected $roles = null;
+    protected $roles;
 
     /**
      * @var array
      */
-    protected $features = null;
+    protected $features;
 
     /**
      * @throws DBException
@@ -258,7 +257,9 @@ class UserService extends Service {
             $stmt->bindValue('username', $username, PDO::PARAM_STR);
             $stmt->bindValue('excludeUserId', $excludeUserId, PDO::PARAM_INT);
             $stmt->execute();
-            if ($stmt->fetchColumn() <= 0) return;
+            if ($stmt->fetchColumn() <= 0) {
+                return;
+            }
             throw new Exception("The username you asked for is already being used");
         } catch (DBALException $e) {
             Log::error("Failed to check username. {$e->getMessage()}");
@@ -307,7 +308,7 @@ class UserService extends Service {
             $user ['createdDate'] = Date::getSqlDateTime();
             $user ['modifiedDate'] = Date::getSqlDateTime();
             $conn->insert('dfl_users', $user);
-            return intval($conn->lastInsertId());
+            return (int)$conn->lastInsertId();
         } catch (DBALException $e) {
             throw new DBException("Error adding user.", $e);
         }
@@ -526,7 +527,7 @@ class UserService extends Service {
             }
 
             $stmt->bindValue('start', ($params['page'] - 1) * $params['size'], PDO::PARAM_INT);
-            $stmt->bindValue('limit', intval($params['size']), PDO::PARAM_INT);
+            $stmt->bindValue('limit', (int)$params['size'], PDO::PARAM_INT);
             $stmt->execute();
 
             $pagination = [];
@@ -648,7 +649,7 @@ class UserService extends Service {
             $stmt = $conn->prepare("SELECT COUNT(*) FROM dfl_users AS u WHERE u.userId = :userId AND DATE_ADD(u.createdDate, INTERVAL 7 DAY) < NOW() LIMIT 1");
             $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
             $stmt->execute();
-            return !!$stmt->fetchColumn();
+            return (bool)$stmt->fetchColumn();
         } catch (DBALException $e) {
             throw new DBException("Failed to get users age.", $e);
         }
@@ -669,8 +670,9 @@ class UserService extends Service {
      * @throws Exception
      */
     public function updateTwitchSubscriptions(array $data): array {
-        if (empty($data))
+        if (empty($data)) {
             return [];
+        }
 
         $conn = Application::getDbConn();
         $batchsize = 100;
@@ -843,7 +845,7 @@ class UserService extends Service {
     public function allButDeleteUser(array $user) {
         try {
             $deletedBy = Session::getCredentials()->getUserId();
-            $userId = intval($user['userId']);
+            $userId = (int)$user['userId'];
             $newUsername = "deleted$userId";
             $newEmail = "deleted$userId";
 

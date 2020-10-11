@@ -21,7 +21,6 @@ use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserAuthService;
 use Destiny\Common\User\UserService;
 use Destiny\Common\User\UserStatus;
-use Destiny\Common\Utils\Country;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\RandomString;
 use Destiny\Common\ViewModel;
@@ -97,7 +96,7 @@ class ProfileController {
             $userService = UserService::instance();
             $authService = AuthenticationService::instance();
             $user = $userService->getUserById($userId);
-            if (boolval($user['allowNameChange'])) {
+            if ((bool)$user['allowNameChange']) {
                 $username = $params['username'];
 
                 try {
@@ -175,7 +174,7 @@ class ProfileController {
         }
         $email = isset($params['email']) && !empty($params['email']) ? $params['email'] : $user['email'];
         $country = isset($params['country']) && !empty($params['country']) ? $params['country'] : $user['country'];
-        $allowGifting = isset($params['allowGifting']) ? $params['allowGifting'] : $user['allowGifting'];
+        $allowGifting = $params['allowGifting'] ?? $user['allowGifting'];
         $userData = [
             'email' => $email,
             'allowGifting' => $allowGifting,
@@ -214,7 +213,7 @@ class ProfileController {
         $userId = Session::getCredentials()->getUserId();
         $authProfiles = $userAuthService->getByUserId($userId);
         $model->title = 'Authentication';
-        $model->authProfileTypes = array_map(function($v){ return $v['authProvider']; }, $authProfiles);
+        $model->authProfileTypes = array_map(static function($v){ return $v['authProvider']; }, $authProfiles);
         $model->authProfiles = $authProfiles;
         $model->user = $userService->getUserById($userId);
         return 'profile/authentication';
@@ -369,7 +368,7 @@ class ProfileController {
             // We deem an access token a "login key" when it has no client
             // Typically it also is none expiring
             $accessTokens = $oauthService->getAccessTokensByUserId($userId);
-            if (count(array_filter($accessTokens, function($v){ return $v['clientId'] == 0; })) >= 5) {
+            if (count(array_filter($accessTokens, static function($v){ return $v['clientId'] == 0; })) >= 5) {
                 throw new Exception ('You have reached the maximum [5] allowed login keys.');
             }
 
@@ -473,7 +472,7 @@ class ProfileController {
      * @Secure ({"USER"})
      * @throws Exception
      */
-    function gifts(ViewModel $model): string {
+    public function gifts(ViewModel $model): string {
         $userId = Session::getCredentials ()->getUserId ();
         $model->gifts = SubscriptionsService::instance()->findCompletedByGifterId($userId);
         $model->user = UserService::instance()->getUserById($userId);
@@ -486,7 +485,7 @@ class ProfileController {
      * @Secure ({"USER"})
      * @throws Exception
      */
-    function donations(ViewModel $model): string {
+    public function donations(ViewModel $model): string {
         $userId = Session::getCredentials ()->getUserId ();
         $model->donations = DonationService::instance()->findCompletedByUserId($userId);
         $model->user = UserService::instance()->getUserById($userId);
@@ -499,7 +498,7 @@ class ProfileController {
      * @Secure ({"USER"})
      * @throws Exception
      */
-    function subscriptions(ViewModel $model): string {
+    public function subscriptions(ViewModel $model): string {
         $userId = Session::getCredentials ()->getUserId ();
         $model->subscriptions = SubscriptionsService::instance()->findCompletedByUserId($userId);
         $model->user = UserService::instance()->getUserById($userId);
@@ -517,14 +516,15 @@ class ProfileController {
         $userId = Session::getCredentials()->getUserId();
         FilterParams::declared($params, 'discordname');
         $data = ['discordname' => $params['discordname']];
-        if (trim($data['discordname']) == '')
+        if (trim($data['discordname']) == '') {
             $data['discordname'] = null;
+        }
         if (mb_strlen($data['discordname']) > 36) {
             Session::setErrorBag('Discord username too long.');
             return 'redirect: /profile';
         }
         $uId = $userService->getUserIdByField('discordname', $params['discordname']);
-        if ($data['discordname'] == null || empty($uId) || intval($uId) === intval($userId)) {
+        if ($data['discordname'] == null || empty($uId) || (int)$uId === (int)$userId) {
             $userService->updateUser($userId, $data);
             Session::setSuccessBag('Discord info has been updated');
         } else {
@@ -544,14 +544,15 @@ class ProfileController {
         $userId = Session::getCredentials()->getUserId();
         FilterParams::declared($params, 'minecraftname');
         $data = ['minecraftname' => $params['minecraftname']];
-        if (trim($data['minecraftname']) == '')
+        if (trim($data['minecraftname']) == '') {
             $data['minecraftname'] = null;
+        }
         if (mb_strlen($data['minecraftname']) > 16) {
             Session::setErrorBag('Minecraft name too long.');
             return 'redirect: /profile';
         }
         $uId = $userService->getUserIdByField('minecraftname', $params['minecraftname']);
-        if ($data['minecraftname'] == null || empty($uId) || intval($uId) === intval($userId)) {
+        if ($data['minecraftname'] == null || empty($uId) || (int)$uId === (int)$userId) {
             $userService->updateUser($userId, $data);
             Session::setSuccessBag('Minecraft name has been updated');
         } else {

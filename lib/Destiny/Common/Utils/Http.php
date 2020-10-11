@@ -3,28 +3,28 @@ namespace Destiny\Common\Utils;
 
 abstract class Http {
 
-    const HEADER_ETAG = 'Etag';
-    const HEADER_CACHE_CONTROL = 'Cache-Control';
-    const HEADER_LOCATION = 'Location';
-    const HEADER_PRAGMA = 'Pragma';
-    const HEADER_CONNECTION = 'Connection';
-    const HEADER_CONTENT_TYPE = 'Content-Type';
-    const HEADER_IF_NONE_MATCH = 'If-None-Match';
-    const HEADER_REQUESTED_WITH = 'Requested-With';
-    const HEADER_AUTH_TOKEN = 'AuthToken';
+    public const HEADER_ETAG = 'Etag';
+    public const HEADER_CACHE_CONTROL = 'Cache-Control';
+    public const HEADER_LOCATION = 'Location';
+    public const HEADER_PRAGMA = 'Pragma';
+    public const HEADER_CONNECTION = 'Connection';
+    public const HEADER_CONTENT_TYPE = 'Content-Type';
+    public const HEADER_IF_NONE_MATCH = 'If-None-Match';
+    public const HEADER_REQUESTED_WITH = 'Requested-With';
+    public const HEADER_AUTH_TOKEN = 'AuthToken';
 
-    const STATUS_MOVED_PERMANENTLY = 301;
-    const STATUS_MOVED_TEMPORARY = 303;
-    const STATUS_NOT_MODIFIED = 304;
-    const STATUS_FORBIDDEN = 403;
-    const STATUS_NOT_FOUND = 404;
-    const STATUS_UNAUTHORIZED = 401;
-    const STATUS_BAD_REQUEST = 400;
-    const STATUS_ERROR = 500;
-    const STATUS_SERVICE_UNAVAILABLE = 503;
-    const STATUS_OK = 200;
-    const STATUS_ACCEPTED = 202;
-    const STATUS_NO_CONTENT = 204;
+    public const STATUS_MOVED_PERMANENTLY = 301;
+    public const STATUS_MOVED_TEMPORARY = 303;
+    public const STATUS_NOT_MODIFIED = 304;
+    public const STATUS_FORBIDDEN = 403;
+    public const STATUS_NOT_FOUND = 404;
+    public const STATUS_UNAUTHORIZED = 401;
+    public const STATUS_BAD_REQUEST = 400;
+    public const STATUS_ERROR = 500;
+    public const STATUS_SERVICE_UNAVAILABLE = 503;
+    public const STATUS_OK = 200;
+    public const STATUS_ACCEPTED = 202;
+    public const STATUS_NO_CONTENT = 204;
     
     public static $HEADER_STATUSES = [
         301 => 'Moved Permanently',
@@ -45,7 +45,7 @@ abstract class Http {
     }
 
     public static function status(int $status) {
-        header ( 'HTTP/1.1 ' . $status . ' ' . self::$HEADER_STATUSES [intval ( $status )] );
+        header ( 'HTTP/1.1 ' . $status . ' ' . self::$HEADER_STATUSES [$status] );
     }
     
     public static function getBaseUrl(): string {
@@ -66,7 +66,7 @@ abstract class Http {
      * TODO if you need an arbitrary header, its not currently possible
      */
     public static function extractHeaders(array $server): array {
-        return array_filter($server, function($name) { return substr($name, 0, 5) == 'HTTP_'; }, ARRAY_FILTER_USE_KEY);
+        return array_filter($server, static function($name) { return strpos($name, 'HTTP_') === 0; }, ARRAY_FILTER_USE_KEY);
     }
 
 }

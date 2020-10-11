@@ -19,11 +19,11 @@ class GoogleAuthHandler extends AbstractAuthHandler {
     private $apiBase = 'https://www.googleapis.com/oauth2/v2';
     public $authProvider = AuthProvider::GOOGLE;
 
-    function getAuthorizationUrl($scope = ['openid', 'email', 'profile'], $claims = ''): string {
+    public function getAuthorizationUrl($scope = ['openid', 'email', 'profile'], $claims = ''): string {
         $conf = $this->getAuthProviderConf();
         return "$this->authBase/auth?" . http_build_query([
             'response_type' => 'code',
-            'scope' => join(' ', $scope),
+            'scope' => implode(' ', $scope),
             'state' => 'security_token=' . Session::getSessionId(),
             'client_id' => $conf ['client_id'],
             'redirect_uri' => sprintf($conf['redirect_uri'], $this->authProvider)
@@ -33,7 +33,7 @@ class GoogleAuthHandler extends AbstractAuthHandler {
     /**
      * @throws Exception
      */
-    function getToken(array $params): array {
+    public function getToken(array $params): array {
         FilterParams::required($params, 'code');
         $conf = $this->getAuthProviderConf();
         $client = $this->getHttpClient();
@@ -47,7 +47,7 @@ class GoogleAuthHandler extends AbstractAuthHandler {
                 'code' => $params['code']
             ]
         ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
+        if ($response->getStatusCode() === Http::STATUS_OK) {
             // TODO use provided JWT id_token instead of getting user info later
             $data = json_decode((string) $response->getBody(), true);
             FilterParams::required($data, 'access_token');
@@ -67,7 +67,7 @@ class GoogleAuthHandler extends AbstractAuthHandler {
                 'Authorization' => "Bearer $accessToken"
             ]
         ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
+        if ($response->getStatusCode() === Http::STATUS_OK) {
             $info = json_decode((string)$response->getBody(), true);
             if (empty($info) ) {
                 throw new Exception ('Invalid user info response');
@@ -80,7 +80,7 @@ class GoogleAuthHandler extends AbstractAuthHandler {
     /**
      * @throws Exception
      */
-    function mapTokenResponse(array $token): OAuthResponse {
+    public function mapTokenResponse(array $token): OAuthResponse {
         $data = $this->getUserInfo($token['access_token']);
         FilterParams::required($data, 'id');
         return new OAuthResponse([
@@ -91,14 +91,14 @@ class GoogleAuthHandler extends AbstractAuthHandler {
             'authId' => (string) $data['id'],
             'authDetail' => $data['hd'] ?? '',
             'authEmail' => $data['email'] ?? '',
-            'verified' => boolval($data['verified_email'] ?? true),
+            'verified' => (bool)($data['verified_email'] ?? true),
         ]);
     }
 
     /**
      * @throws Exception
      */
-    function renewToken(string $refreshToken): array {
+    public function renewToken(string $refreshToken): array {
         throw new Exception("Not implemented");
         // TODO Implement
     }

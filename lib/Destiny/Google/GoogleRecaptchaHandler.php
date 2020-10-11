@@ -34,7 +34,7 @@ class GoogleRecaptchaHandler {
                 'secret' => Config::$a ['g-recaptcha'] ['secret']
             ]
         ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
+        if ($response->getStatusCode() === Http::STATUS_OK) {
             $data = json_decode($response->getBody(), true);
             if (empty($data)) {
                 throw new Exception('Failed to resolve captcha.');

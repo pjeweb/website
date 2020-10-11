@@ -65,7 +65,7 @@ class UserAuthService extends Service {
      * @throws DBException
      * @return int|false
      */
-    public function getUserIdByAuthIdAndProvider($id, string $provider) {
+    public function getUserIdByAuthIdAndProvider(string $id, string $provider) {
         try {
             $conn = Application::getDbConn();
             $stmt = $conn->prepare("SELECT a.userId FROM dfl_users_auth a WHERE a.authId = :id AND a.authProvider = :provider LIMIT 1");

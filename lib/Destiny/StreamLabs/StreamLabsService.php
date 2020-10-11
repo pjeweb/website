@@ -34,7 +34,7 @@ class StreamLabsService extends AbstractAuthService {
     private $apiBase = 'https://streamlabs.com/api/v1.0';
     public $provider = AuthProvider::STREAMLABS;
 
-    function afterConstruct() {
+    public function afterConstruct() {
         parent::afterConstruct();
         $this->authHandler = StreamLabsAuthHandler::instance();
     }

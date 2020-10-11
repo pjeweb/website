@@ -93,16 +93,16 @@ class ControllerAnnotationLoader {
             $privateKey = $reader->getMethodAnnotation($method, $this->privateKeyRef->getName());
             /** @var Annotation\Secure $secure */
             $secure = $reader->getMethodAnnotation($method, $this->secureRef->getName());
-            for ($i = 0; $i < count($routes); ++$i) {
+            foreach ($routes as $iValue) {
                 $router->addRoute(new Route([
-                    'path' => $routes[$i]->path,
+                    'path' => $iValue->path,
                     'class' => $classRef->name,
                     'classMethod' => $method->name,
-                    'responseBody' => !!$responseBody,
-                    'httpMethod' => $httpMethod ? $httpMethod->allow : null,
-                    'privateKeys' => $privateKey ? $privateKey->names : null,
-                    'secure' => $secure ? $secure->roles : null,
-                    'audit' => !!$audit
+                    'responseBody' => (bool)$responseBody,
+                    'httpMethod' => $httpMethod->allow ?? null,
+                    'privateKeys' => $privateKey->names ?? null,
+                    'secure' => $secure->roles ?? null,
+                    'audit' => (bool)$audit
                 ]));
             }
         }
@@ -114,9 +114,9 @@ class ControllerAnnotationLoader {
     public function getMethodRoutes(Reader $reader, ReflectionMethod $method) {
         $routes = [];
         $annotations = $reader->getMethodAnnotations($method);
-        for ($i = 0; $i < count($annotations); ++$i) {
-            if ($this->routeRef->isInstance($annotations[$i])) {
-                $routes[] = $annotations[$i];
+        foreach ($annotations as $iValue) {
+            if ($this->routeRef->isInstance($iValue)) {
+                $routes[] = $iValue;
             }
         }
         return $routes;

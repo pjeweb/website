@@ -112,10 +112,12 @@ class IpnController {
             // This is sent from paypal when a recurring payment is billed
             case 'RECURRING_PAYMENT' :
                 $this->checkTransactionRecipientEmail($data);
-                if (!isset ($data ['payment_status']))
+                if (!isset ($data ['payment_status'])) {
                     throw new Exception ('Invalid payment status');
-                if (!isset ($data ['next_payment_date']))
+                }
+                if (!isset ($data ['next_payment_date'])) {
                     throw new Exception ('Invalid next_payment_date');
+                }
 
                 $nextPaymentDate = Date::getDateTime($data ['next_payment_date']);
                 $subscription = $this->getSubscriptionByPaymentProfileData($data);

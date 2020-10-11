@@ -42,13 +42,13 @@ class TwitterAuthHandler extends AbstractAuthHandler {
     /**
      * @throws Exception
      */
-    function getAuthorizationUrl($scope = [], $claims = ''): string {
+    public function getAuthorizationUrl($scope = [], $claims = ''): string {
         $conf = $this->getAuthProviderConf();
         $response = $this->getHttpClient()->post("$this->authBase/request_token", [
             'headers' => ['User-Agent' => Config::userAgent()],
             'form_params' => ['oauth_callback' => $conf['redirect_uri']]
         ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
+        if ($response->getStatusCode() === Http::STATUS_OK) {
             $params = $this->extractParams((string)$response->getBody());
             if (!$params['oauth_callback_confirmed'] || $params['oauth_callback_confirmed'] !== 'true') {
                 throw new Exception ('The callback was not confirmed by Twitter so we cannot continue.');
@@ -61,7 +61,7 @@ class TwitterAuthHandler extends AbstractAuthHandler {
     /**
      * @throws Exception
      */
-    function getToken(array $params): array {
+    public function getToken(array $params): array {
         FilterParams::required($params, 'oauth_token');
         FilterParams::required($params, 'oauth_verifier');
         $response = $this->getHttpClient()->post("$this->authBase/access_token", [
@@ -71,7 +71,7 @@ class TwitterAuthHandler extends AbstractAuthHandler {
                 'oauth_verifier' => trim($params['oauth_verifier']),
             ]
         ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
+        if ($response->getStatusCode() === Http::STATUS_OK) {
             $body = (string) $response->getBody();
             $data = $this->extractParams($body) ?? [];
             $this->setHttpClient($this->createHttpClient($data)); // TODO hackey
@@ -88,7 +88,7 @@ class TwitterAuthHandler extends AbstractAuthHandler {
             'headers' => ['User-Agent' => Config::userAgent()],
             'auth' => 'oauth',
         ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
+        if ($response->getStatusCode() === Http::STATUS_OK) {
             $info = json_decode((string) $response->getBody(), true);
             if (empty($info)) {
                 throw new Exception ('Invalid user_info response');
@@ -101,7 +101,7 @@ class TwitterAuthHandler extends AbstractAuthHandler {
     /**
      * @throws Exception
      */
-    function mapTokenResponse(array $token): OAuthResponse {
+    public function mapTokenResponse(array $token): OAuthResponse {
         $data = $this->getUserInfo();
         FilterParams::required($data, 'id_str');
         return new OAuthResponse([
@@ -135,20 +135,13 @@ class TwitterAuthHandler extends AbstractAuthHandler {
     }
 
     /**
-     * Decodes the string or array from it's URL encoded form
-     * If an array is passed each array value will will be decoded.
+     * Decodes the string from it's URL encoded form
      *
-     * @param mixed $data the scalar or array to decode
+     * @param string $data the string to decode
      * @return string $data decoded from the URL encoded form
      */
     private function safeDecode(string $data): string {
-        if (is_array($data)) {
-            return array_map([$this, 'safeDecode'], $data);
-        } else if (is_scalar($data)) {
-            return rawurldecode($data);
-        } else {
-            return '';
-        }
+        return rawurldecode($data);
     }
 
     /**
@@ -156,7 +149,7 @@ class TwitterAuthHandler extends AbstractAuthHandler {
      * @return array
      * @throws Exception
      */
-    function renewToken(string $refreshToken): array {
+    public function renewToken(string $refreshToken): array {
         throw new Exception("Not implemented");
         // TODO Implement
     }

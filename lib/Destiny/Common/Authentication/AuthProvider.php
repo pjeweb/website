@@ -3,13 +3,13 @@ namespace Destiny\Common\Authentication;
 
 abstract class AuthProvider {
 
-    const GOOGLE = 'google';
-    const TWITCH = 'twitch';
-    const REDDIT = 'reddit';
-    const TWITTER = 'twitter';
-    const DISCORD = 'discord';
-    const STREAMLABS = 'streamlabs';
-    const STREAMELEMENTS = 'streamelements';
-    const TWITCHBROADCAST = 'twitchbroadcaster';
+    public const GOOGLE = 'google';
+    public const TWITCH = 'twitch';
+    public const REDDIT = 'reddit';
+    public const TWITTER = 'twitter';
+    public const DISCORD = 'discord';
+    public const STREAMLABS = 'streamlabs';
+    public const STREAMELEMENTS = 'streamelements';
+    public const TWITCHBROADCAST = 'twitchbroadcaster';
 
 }

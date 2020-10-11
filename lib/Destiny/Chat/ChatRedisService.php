@@ -29,17 +29,17 @@ class ChatRedisService extends Service {
      */
     public $redis;
 
-    function afterConstruct() {
+    public function afterConstruct() {
         parent::afterConstruct();
-        $this->maxlife = intval(ini_get('session.gc_maxlifetime'));
+        $this->maxlife = (int)ini_get('session.gc_maxlifetime');
         $this->redisdb = Config::$a['redis']['database'];
         $this->redis = Application::instance()->getRedis();
     }
 
     private function stripRedisUserIpPrefixes(array $keys) {
-        return array_filter(array_map(function($n) {
-            return intval(substr($n, strlen('CHAT:userips-')));
-        }, $keys), function($n){
+        return array_filter(array_map(static function($n) {
+            return (int)substr($n, strlen('CHAT:userips-'));
+        }, $keys), static function($n){
             return $n != null && $n > 0;
         });
     }
@@ -74,8 +74,8 @@ class ChatRedisService extends Service {
     /**
      * @throws Exception
      */
-    public function cacheIPForUser(int $userId, string $ipAddress) {
-        $keys = RedisUtils::callScript('cache-ip', ["CHAT:userips-$userId", $ipAddress], 1);
+    public function cacheIPForUser(int $userId, string $ipAddress): void {
+        RedisUtils::callScript('cache-ip', ["CHAT:userips-$userId", $ipAddress], 1);
     }
 
     /**
@@ -126,7 +126,7 @@ class ChatRedisService extends Service {
     }
 
     public function removeChatSession(string $sessionId): int {
-        return $this->redis->delete("CHAT:session-$sessionId");
+        return $this->redis->del("CHAT:session-$sessionId");
     }
 
     public function sendRefreshUser(SessionCredentials $credentials): int {
@@ -139,7 +139,7 @@ class ChatRedisService extends Service {
 
     public function sendUnbanAndUnmute(int $userId) {
         // Publishing to this channel unbans *and* unmutes.
-        $this->redis->publish("unbanuserid-$this->redisdb", "$userId");
+        $this->redis->publish("unbanuserid-$this->redisdb", (string)$userId);
     }
 
     /**
@@ -152,12 +152,12 @@ class ChatRedisService extends Service {
 
     public function publishPrivateMessage(array $d): int {
         return $this->redis->publish("privmsg-$this->redisdb", json_encode([
-            'messageid' => "{$d['messageid']}",
+            'messageid' => (string)($d['messageid']),
             'message' => $d['message'],
             'username' => $d['username'],
             //'userid' => $d['userid'],
             //'targetusername' => $d['targetusername'],
-            'targetuserid' => "{$d['targetuserid']}"
+            'targetuserid' => (string)($d['targetuserid'])
         ]));
     }
 

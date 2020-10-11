@@ -12,7 +12,7 @@ use Destiny\LibSyn\LibSynFeedService;
  */
 class LibSynFeed implements TaskInterface {
 
-    function execute() {
+    public function execute() {
         $libSynService = LibSynFeedService::instance();
         $feed = $libSynService->getFeed(Config::$a['libsyn']['user']);
         if (!empty($feed)) {

@@ -30,7 +30,7 @@ class LastFMApiService extends Service {
                     'format' => 'json'
                 ]
             ]);
-            if ($response->getStatusCode() == Http::STATUS_OK) {
+            if ($response->getStatusCode() === Http::STATUS_OK) {
                 $json = \GuzzleHttp\json_decode($response->getBody(), true);
                 return $this->parseFeedResponse('recenttracks', $json);
             }
@@ -56,7 +56,7 @@ class LastFMApiService extends Service {
                     'format' => 'json'
                 ]
             ]);
-            if ($response->getStatusCode() == Http::STATUS_OK) {
+            if ($response->getStatusCode() === Http::STATUS_OK) {
                 $json = \GuzzleHttp\json_decode($response->getBody(), true);
                 return $this->parseFeedResponse('toptracks', $json);
             }
@@ -70,18 +70,18 @@ class LastFMApiService extends Service {
      * @return array|null
      */
     private function parseFeedResponse(string $rootNode, array $json) {
-        if (!$json || isset ($json ['error']) && $json ['error'] > 0 || count($json [$rootNode] ['track']) <= 0) {
+        if (!$json || (isset ($json ['error']) && $json['error'] > 0) || count($json[$rootNode]['track']) <= 0) {
             return null;
         }
-        foreach ($json [$rootNode] ['track'] as $i => $track) {
+        foreach ($json[$rootNode]['track'] as $i => $track) {
             // Timezone DST = -1
-            if (!isset ($track ['@attr']) || (!isset($track ['@attr'] ['nowplaying']) || $track ['@attr'] ['nowplaying'] != true)) {
-                if (!empty ($track ['date'])) {
-                    $json [$rootNode] ['track'] [$i] ['date'] ['uts]'] = $track ['date'] ['uts'];
-                    $json [$rootNode] ['track'] [$i] ['date_str'] = Date::getDateTime($track ['date'] ['uts'])->format(Date::FORMAT);
+            if (!isset ($track['@attr']) || (!isset($track['@attr']['nowplaying']) || $track['@attr']['nowplaying'] != true)) {
+                if (!empty ($track['date'])) {
+                    $json[$rootNode]['track'][$i]['date']['uts'] = $track['date']['uts'];
+                    $json[$rootNode]['track'][$i]['date_str'] = Date::getDateTime($track['date']['uts'])->format(Date::FORMAT);
                 }
             } else {
-                $json [$rootNode] ['track'] [$i] ['date_str'] = '';
+                $json[$rootNode]['track'][$i]['date_str'] = '';
             }
         }
         return $json;

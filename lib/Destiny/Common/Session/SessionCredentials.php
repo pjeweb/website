@@ -10,7 +10,7 @@ class SessionCredentials implements JsonSerializable {
     /**
      * @var int|null
      */
-    public $userId = null;
+    public $userId;
     public $authProvider = '';
     public $username = '';
     public $userStatus = '';
@@ -114,7 +114,7 @@ class SessionCredentials implements JsonSerializable {
      */
     public function isValid() {
         $data = $this->getData();
-        if (empty ($data ['userId']) && intval($data ['userId']) > 0) {
+        if (empty ($data ['userId']) && (int)$data ['userId'] > 0) {
             return false;
         }
         if (empty ($data ['username'])) {
@@ -139,9 +139,9 @@ class SessionCredentials implements JsonSerializable {
      */
     public function addRoles($role) {
         if (is_array($role)) {
-            for ($i = 0; $i < count($role); ++$i) {
-                if (!in_array($role [$i], $this->roles)) {
-                    $this->roles [] = $role [$i];
+            foreach ($role as $iValue) {
+                if (!in_array($iValue, $this->roles)) {
+                    $this->roles [] = $iValue;
                 }
             }
         } elseif (!in_array($role, $this->roles)) {
@@ -153,7 +153,7 @@ class SessionCredentials implements JsonSerializable {
      * @param string $roleId
      * @return bool
      */
-    public function hasRole($roleId): bool {
+    public function hasRole(string $roleId): bool {
         foreach ($this->roles as $role) {
             if (strcasecmp($role, $roleId) === 0) {
                 return true;
@@ -200,7 +200,7 @@ class SessionCredentials implements JsonSerializable {
     /**
      * @param array $subscription
      */
-    public function setSubscription($subscription) {
+    public function setSubscription(array $subscription) {
         $this->subscription = $subscription;
     }
 
@@ -208,7 +208,7 @@ class SessionCredentials implements JsonSerializable {
      * @param string $featureName
      * @return bool
      */
-    public function hasFeature($featureName) {
+    public function hasFeature(string $featureName): bool {
         foreach ($this->features as $feature) {
             if (strcasecmp($feature, $featureName) === 0) {
                 return true;
@@ -224,9 +224,9 @@ class SessionCredentials implements JsonSerializable {
      */
     public function addFeatures($features) {
         if (is_array($features)) {
-            for ($i = 0; $i < count($features); ++$i) {
-                if (!in_array($features [$i], $this->features)) {
-                    $this->features [] = $features [$i];
+            foreach ($features as $iValue) {
+                if (!in_array($iValue, $this->features)) {
+                    $this->features [] = $iValue;
                 }
             }
         } elseif (!in_array($features, $this->features)) {

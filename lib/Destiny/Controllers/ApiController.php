@@ -103,7 +103,7 @@ class ApiController {
                         $userid = $params['userid'];
                     } else if (isset($params['discordid'])) {
                         FilterParams::required($params, 'discordid');
-                        $userid = $userAuthService->getUserIdByAuthIdAndProvider($params['discordid'], AuthProvider::DISCORD);
+                        $userid = $userAuthService->getUserIdByAuthIdAndProvider((string) $params['discordid'], AuthProvider::DISCORD);
                     } else if (isset($params['discordusername'])) {
                         FilterParams::required($params, 'discordusername');
                         $userid = $userAuthService->getUserIdByAuthDetail($params['discordusername'], AuthProvider::DISCORD);
@@ -121,7 +121,7 @@ class ApiController {
                         $userid = $userAuthService->getUserIdByAuthDetail($params['redditname'], AuthProvider::REDDIT);
                     } else if (isset($params['redditid'])) {
                         FilterParams::required($params, 'redditid');
-                        $userid = $userAuthService->getUserIdByAuthIdAndProvider($params['redditid'], AuthProvider::REDDIT);
+                        $userid = $userAuthService->getUserIdByAuthIdAndProvider((string) $params['redditid'], AuthProvider::REDDIT);
                     } else {
                         $response->setStatus(Http::STATUS_BAD_REQUEST);
                         return ['message' => 'No field specified', 'error' => 'fielderror', 'code' => Http::STATUS_BAD_REQUEST];
@@ -144,7 +144,7 @@ class ApiController {
                         $userid = $userAuthService->getUserIdByAuthDetail($params['redditname'], AuthProvider::REDDIT);
                     } else if (isset($params['redditid'])) {
                         FilterParams::required($params, 'redditid');
-                        $userid = $userAuthService->getUserIdByAuthIdAndProvider($params['redditid'], AuthProvider::REDDIT);
+                        $userid = $userAuthService->getUserIdByAuthIdAndProvider((string) $params['redditid'], AuthProvider::REDDIT);
                     } else {
                         $response->setStatus(Http::STATUS_BAD_REQUEST);
                         return ['message' => 'No field specified', 'error' => 'fielderror', 'code' => Http::STATUS_BAD_REQUEST];

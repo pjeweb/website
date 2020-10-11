@@ -189,7 +189,7 @@ class AdminEmotesController {
      * @Audit
      */
     public function uploadImage(): array {
-        return array_map(function($file) {
+        return array_map(static function($file) {
             $imageService = ImageService::instance();
             $upload = $imageService->upload($file, EmoteService::EMOTES_DIR);
             return $imageService->findImageById($imageService->insertImage($upload, 'emotes'));
@@ -274,7 +274,7 @@ class AdminEmotesController {
      * @Secure ({"EMOTES"})
      * @HttpMethod ({"GET"})
      */
-    function emotePreview(array $params, ViewModel $model): string {
+    public function emotePreview(array $params, ViewModel $model): string {
         try {
             FilterParams::required($params, 'id');
             $emoteService = EmoteService::instance();
@@ -299,7 +299,7 @@ class AdminEmotesController {
      *
      * @throws Exception
      */
-    function emotePreviewUnsaved(array $params, ViewModel $model): string {
+    public function emotePreviewUnsaved(array $params, ViewModel $model): string {
         FilterParams::required($params, 'prefix');
         FilterParams::required($params, 'imageId');
         FilterParams::declared($params, 'styles');

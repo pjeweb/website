@@ -44,7 +44,7 @@ class SubscriptionExpire implements TaskInterface {
                 // The end date may not simply be behind by the subscription frequency.
                 $end = Date::getDateTime($subscription ['endDate']);
                 $diff = $end->diff(new DateTime ('NOW'));
-                $end->modify('+' . (intval(($diff->format('%y') * 12)) + intval($diff->format('%m'))) . ' month');
+                $end->modify('+' . (($diff->format('%y') * 12) + (int)$diff->format('%m')) . ' month');
                 $end->modify('+' . $subType ['billingFrequency'] . ' ' . strtolower($subType ['billingPeriod']));
 
                 $subscriptionService->updateSubscription([

@@ -133,19 +133,19 @@ class ChatController {
             return 'throttled';
         }
         Session::set('chat_ucd_stalks', time() + 10);
-        $limit = isset($params['limit']) ? intval($params['limit']) : 3;
+        $limit = isset($params['limit']) ? (int)$params['limit'] : 3;
         $limit = $limit > 0 && $limit < 30 ? $limit : 3;
         $client = HttpClient::instance();
         $r = $client->get(self::$LOGS_ENDPOINT['stalk'] . urlencode($params['username']) . '.json', [
             'headers' => ['User-Agent' => Config::userAgent()],
             'query' => ['limit' => $limit]
         ]);
-        if ($r->getStatusCode() == Http::STATUS_OK || $r->getStatusCode() == Http::STATUS_NOT_FOUND) {
+        if ($r->getStatusCode() === Http::STATUS_OK || $r->getStatusCode() === Http::STATUS_NOT_FOUND) {
             $response->setStatus(Http::STATUS_OK);
             return json_decode($r->getBody(), true);
-        } else {
-            Log::warn('Failed to return valid response for chat mentions', ['message' => $response->getBody()]);
         }
+
+        Log::warn('Failed to return valid response for chat mentions', ['message' => $response->getBody()]);
         $response->setStatus(Http::STATUS_ERROR);
         return 'badproxyresponse';
     }
@@ -168,19 +168,19 @@ class ChatController {
             return 'throttled';
         }
         Session::set('chat_ucd_mentions', time() + 10);
-        $limit = isset($params['limit']) ? intval($params['limit']) : 3;
+        $limit = isset($params['limit']) ? (int)$params['limit'] : 3;
         $limit = $limit > 0 && $limit < 30 ? $limit : 3;
         $client = HttpClient::instance();
         $r = $client->get(self::$LOGS_ENDPOINT['mentions'] . urlencode($params['username']) . '.json', [
             'headers' => ['User-Agent' => Config::userAgent()],
             'query' => ['limit' => $limit]
         ]);
-        if ($r->getStatusCode() == Http::STATUS_OK || $r->getStatusCode() == Http::STATUS_NOT_FOUND) {
+        if ($r->getStatusCode() === Http::STATUS_OK || $r->getStatusCode() === Http::STATUS_NOT_FOUND) {
             $response->setStatus(Http::STATUS_OK);
             return json_decode($r->getBody(), true);
-        } else {
-            Log::warn('Failed to return valid response for chat mentions', ['message' => $response->getBody()]);
         }
+
+        Log::warn('Failed to return valid response for chat mentions', ['message' => $response->getBody()]);
         $response->setStatus(Http::STATUS_ERROR);
         return 'badproxyresponse';
     }

@@ -21,7 +21,7 @@ class StreamLabsAuthHandler extends AbstractAuthHandler {
         $conf = $this->getAuthProviderConf();
         return "$this->authBase/authorize?" . http_build_query([
                 'response_type' => 'code',
-                'scope'         => join(' ', $scope),
+                'scope'         => implode(' ', $scope),
                 'client_id'     => $conf['client_id'],
                 'redirect_uri'  => $conf['redirect_uri']
             ], null, '&');
@@ -30,7 +30,7 @@ class StreamLabsAuthHandler extends AbstractAuthHandler {
     /**
      * @throws Exception
      */
-    function getToken(array $params): array {
+    public function getToken(array $params): array {
         FilterParams::required($params, 'code');
         $conf = $this->getAuthProviderConf();
         $response = $this->getHttpClient()->post("$this->authBase/token", [
@@ -43,7 +43,7 @@ class StreamLabsAuthHandler extends AbstractAuthHandler {
                 'code' => $params['code']
             ]
         ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
+        if ($response->getStatusCode() === Http::STATUS_OK) {
             $data = json_decode((string)$response->getBody(), true);
             FilterParams::required($data, 'access_token');
             FilterParams::declared($data, 'refresh_token');
@@ -55,7 +55,7 @@ class StreamLabsAuthHandler extends AbstractAuthHandler {
     /**
      * @throws Exception
      */
-    function renewToken(string $refreshToken): array {
+    public function renewToken(string $refreshToken): array {
         $conf = $this->getAuthProviderConf();
         $response = $this->getHttpClient()->post("$this->authBase/token", [
             'headers' => ['User-Agent' => Config::userAgent()],
@@ -67,7 +67,7 @@ class StreamLabsAuthHandler extends AbstractAuthHandler {
                 'refresh_token' => $refreshToken
             ]
         ]);
-        if (!empty($response) && $response->getStatusCode() == Http::STATUS_OK) {
+        if ($response !== null && $response->getStatusCode() === Http::STATUS_OK) {
             $data = json_decode((string)$response->getBody(), true);
             FilterParams::required($data, 'access_token');
             return $data;
@@ -83,7 +83,7 @@ class StreamLabsAuthHandler extends AbstractAuthHandler {
         $response = $client->get("$this->authBase/user?access_token=$accessToken", [
             'headers' => ['User-Agent' => Config::userAgent()]
         ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
+        if ($response->getStatusCode() === Http::STATUS_OK) {
             $info = json_decode((string)$response->getBody(), true);
             if (empty($info) ) {
                 throw new Exception ('Invalid user info response');
@@ -96,7 +96,7 @@ class StreamLabsAuthHandler extends AbstractAuthHandler {
     /**
      * @throws Exception
      */
-    function mapTokenResponse(array $token): OAuthResponse {
+    public function mapTokenResponse(array $token): OAuthResponse {
         $data = $this->getUserInfo($token['access_token']);
         FilterParams::required($data, 'streamlabs');
         return new OAuthResponse([

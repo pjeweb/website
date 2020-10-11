@@ -2,7 +2,6 @@
 namespace Destiny\Discord;
 
 use Destiny\Common\Session\Session;
-use Destiny\Common\Utils\Http;
 use Exception;
 use Monolog\Handler\AbstractProcessingHandler;
 
@@ -18,7 +17,7 @@ class DiscordLogHandler extends AbstractProcessingHandler {
         try {
             // We may be running within the command line, no session object is instantiated
             $session = Session::instance();
-            $creds = !empty($session) ? $session->getCredentials() : null;
+            $creds = $session !== null ? $session->getCredentials() : null;
             //
             $url = $_SERVER['REQUEST_URI'] ?? '';
             $color = $record['level'] >= 400 ? 'danger' : ($record['level'] >= 300 ? 'warning' : 'good');
@@ -30,7 +29,7 @@ class DiscordLogHandler extends AbstractProcessingHandler {
                     'short' => false
                 ];
             }
-            if (!empty($creds)) {
+            if ($creds !== null) {
                 $fields[] = [
                     'title' => 'User',
                     'value' => DiscordMessenger::userLink($creds->getUserId(), $creds->getUsername()),
@@ -51,6 +50,5 @@ class DiscordLogHandler extends AbstractProcessingHandler {
             // Recursion
             // Log::error("Error sending discord message." . $e->getMessage() . PHP_EOL . $e->getTraceAsString());
         }
-        return;
     }
 }
