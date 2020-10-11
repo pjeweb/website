@@ -52,31 +52,37 @@ class ChatSubscriptionController {
             FilterParams::required($params, 'userid');
             FilterParams::required($params, 'targetuserid');
 
-            if($params['userid'] == $params['targetuserid'])
+            if($params['userid'] == $params['targetuserid']) {
                 throw new Exception ('Cannot send messages to yourself.');
+            }
 
             $ban = $chatBanService->getUserActiveBan ( $params['userid'] );
-            if (! empty ( $ban ))
+            if (! empty ( $ban )) {
                 throw new Exception ('privmsgbanned');
+            }
 
             $oldEnough = $userService->isUserOldEnough ( $params['userid'] );
-            if (! $oldEnough)
+            if (! $oldEnough) {
                 throw new Exception ('privmsgaccounttooyoung');
+            }
 
             $user = $userService->getUserById ( $params['userid'] );
             $credentials = new SessionCredentials ( $user );
             $credentials->addRoles ( $userService->getRolesByUserId ( $params['userid'] ) );
             $targetuser = $userService->getUserById ( $params['targetuserid'] );
 
-            if(empty($targetuser))
+            if(empty($targetuser)) {
                 throw new Exception ('notfound');
+            }
 
             $canSend = $privateMessageService->canSend( $credentials, $params['targetuserid'] );
-            if (! $canSend)
+            if (! $canSend) {
                 throw new Exception ('throttled');
+            }
 
-            if(empty($user))
+            if(empty($user)) {
                 throw new Exception ('notfound');
+            }
 
             $message = [
                 'userid' => $params['userid'],
@@ -185,7 +191,7 @@ class ChatSubscriptionController {
                 return null;
             }
 
-            $user = $userService->getUserById((int) $userId);
+            $user = $userService->getUserById($userId);
             switch (strtoupper($data['context'])) {
 
                 case 'SUB':

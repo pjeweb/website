@@ -21,7 +21,7 @@ class YoutubeApiService extends Service {
         // Get the channel ID's from a specific person
         // GET https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=Destiny&key={1}
         // GET https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&channelId={0}&key={1}
-        $params ['limit'] = (isset ($params ['limit'])) ? intval($params ['limit']) : 4;
+        $limit = (isset($params['limit'])) ? (int) $params['limit'] : 4;
         $client = HttpClient::instance();
         $response = $client->get('https://www.googleapis.com/youtube/v3/search', [
             'headers' => ['User-Agent' => Config::userAgent()],
@@ -31,10 +31,10 @@ class YoutubeApiService extends Service {
                 'part' => 'snippet',
                 'key' => Config::$a ['youtube'] ['apikey'],
                 'channelId' => Config::$a ['youtube'] ['playlistId'],
-                'maxResults' => intval($params ['limit']),
+                'maxResults' => $limit,
             ]
         ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
+        if ($response->getStatusCode() === Http::STATUS_OK) {
             try {
                 $json = \GuzzleHttp\json_decode($response->getBody(), true);
                 if (is_array($json ['items'])) {

@@ -32,14 +32,14 @@ class RedditService extends Service {
             'query' => ['limit' => 6, 'sort' => 'new']
         ]);
         try {
-            if ($response->getStatusCode() == Http::STATUS_OK) {
+            if ($response->getStatusCode() === Http::STATUS_OK) {
                 $json = json_decode($response->getBody(), true);
                 if (isset($json['data']) && !empty($json['data']) && isset($json['data']['children']) && !empty($json['data']['children'])) {
                     $data = [];
                     foreach ($json['data']['children'] as $child) {
                         if (isset($child['data'])) {
                             $c = $child['data'];
-                            array_push($data, [
+                            $data[] = [
                                 'id' => $c['id'],
                                 'title' => $c['title'],
                                 'created' => $c['created_utc'],
@@ -54,7 +54,7 @@ class RedditService extends Service {
                                 'author' => $c['author'],
                                 'downs' => $c['downs'],
                                 'ups' => $c['ups']
-                            ]);
+                            ];
                         }
                     }
                     return $data;

@@ -28,8 +28,8 @@ class AuthenticationRedirectionFilter {
     /**
      * @throws Exception
      */
-    function __construct(OAuthResponse $authResponse, Request $request) {
-        if (empty($authResponse) || !$authResponse->isValid()) {
+    public function __construct(OAuthResponse $authResponse, Request $request) {
+        if ($authResponse === null || !$authResponse->isValid()) {
             Log::error('Error validating auth response {creds}', ['creds' => var_export($authResponse, true)]);
             throw new Exception ('Invalid auth credentials');
         }
@@ -163,23 +163,22 @@ class AuthenticationRedirectionFilter {
             $redirectUri = $data['redirect_uri'] . '?' . http_build_query(['code' => $code, 'state' => $data['state']], null, '&');
             return "redirect: $redirectUri";
 
-        } else {
-
-            // Renew the session upon successful login, makes it slightly harder to hijack
-            $session = Session::instance();
-            if ($session != null) {
-                $session->renew();
-            }
-            $authService->updateWebSession($user, $provider);
-            if ($rememberme) {
-                $authService->setRememberMe($user);
-            }
-            if (boolval($user['allowNameChange'])) {
-                return 'redirect: /profile';
-            }
-            Session::setSuccessBag('Login successful!');
-            return (!empty($follow) && substr($follow, 0, 1) == '/') ? 'redirect: ' . $follow : 'redirect: /profile';
         }
+
+// Renew the session upon successful login, makes it slightly harder to hijack
+        $session = Session::instance();
+        if ($session != null) {
+            $session->renew();
+        }
+        $authService->updateWebSession($user, $provider);
+        if ($rememberme) {
+            $authService->setRememberMe($user);
+        }
+        if (boolval($user['allowNameChange'])) {
+            return 'redirect: /profile';
+        }
+        Session::setSuccessBag('Login successful!');
+        return (!empty($follow) && substr($follow, 0, 1) == '/') ? 'redirect: ' . $follow : 'redirect: /profile';
     }
 
     /**

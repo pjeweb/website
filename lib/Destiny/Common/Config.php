@@ -17,7 +17,7 @@ class Config {
     }
 
     public static function cdnv(): string {
-        return self::cdn() . '/' . Config::version();
+        return self::cdn() . '/' . self::version();
     }
 
     public static function cdni(): string {

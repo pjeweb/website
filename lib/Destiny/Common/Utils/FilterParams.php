@@ -42,12 +42,15 @@ class FilterParams {
      */
     public static function isEmpty(array $params, string $identifier = ''): bool {
         if (is_array($params) && isset($params[$identifier])) {
-            if (is_array($params[$identifier]) && sizeof($params[$identifier]) === 0)
+            if (is_array($params[$identifier]) && count($params[$identifier]) === 0) {
                 return true;
-            if (is_string($params[$identifier]) && trim($params[$identifier]) == '')
+            }
+            if (is_string($params[$identifier]) && trim($params[$identifier]) == '') {
                 return true;
-            if (empty($params[$identifier]))
+            }
+            if (empty($params[$identifier])) {
                 return true;
+            }
             return false;
         }
         return true;

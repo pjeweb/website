@@ -22,11 +22,11 @@ class RedditAuthHandler extends AbstractAuthHandler {
     /**
      * @return string
      */
-    function getAuthorizationUrl($scope = ['identity'], $claims = ''): string {
+    public function getAuthorizationUrl($scope = ['identity'], $claims = ''): string {
         $conf = $this->getAuthProviderConf();
         return "$this->apiBase/authorize?" . http_build_query([
                 'response_type' => 'code',
-                'scope' => join(' ', $scope),
+                'scope' => implode(' ', $scope),
                 'state' => md5(time() . 'eFdcSA_'),
                 'client_id' => $conf['client_id'],
                 'redirect_uri' => $conf['redirect_uri']
@@ -36,7 +36,7 @@ class RedditAuthHandler extends AbstractAuthHandler {
     /**
      * @throws Exception
      */
-    function getToken(array $params): array {
+    public function getToken(array $params): array {
         FilterParams::required($params, 'code');
         $conf = $this->getAuthProviderConf();
         $client = $this->getHttpClient();
@@ -52,7 +52,7 @@ class RedditAuthHandler extends AbstractAuthHandler {
                 'code' => $params['code']
             ]
         ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
+        if ($response->getStatusCode() === Http::STATUS_OK) {
             $data = json_decode((string)$response->getBody(), true);
             FilterParams::required($data, 'access_token');
             return $data;
@@ -71,7 +71,7 @@ class RedditAuthHandler extends AbstractAuthHandler {
                 'Authorization' => "bearer $accessToken"
             ]
         ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
+        if ($response->getStatusCode() === Http::STATUS_OK) {
             return json_decode((string)$response->getBody(), true);
         }
         throw new Exception("Failed to retrieve user info.");
@@ -80,7 +80,7 @@ class RedditAuthHandler extends AbstractAuthHandler {
     /**
      * @throws Exception
      */
-    function mapTokenResponse(array $token): OAuthResponse {
+    public function mapTokenResponse(array $token): OAuthResponse {
         $data = $this->getUserInfo($token['access_token']);
         FilterParams::required($data, 'id');
         return new OAuthResponse([
@@ -91,14 +91,14 @@ class RedditAuthHandler extends AbstractAuthHandler {
             'authId' => (string) $data['id'],
             'authDetail' => $data['name'] ?? '',
             'authEmail' => '',
-            'verified' => boolval($data['has_verified_email'] ?? false),
+            'verified' => (bool)($data['has_verified_email'] ?? false),
         ]);
     }
 
     /**
      * @throws Exception
      */
-    function renewToken(string $refreshToken): array {
+    public function renewToken(string $refreshToken): array {
         throw new Exception("Not implemented");
         // TODO Implement
     }

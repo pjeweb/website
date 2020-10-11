@@ -2,7 +2,17 @@
 namespace Destiny\Chat;
 
 class BanReasonParseRule {
-    function __construct(string $regex, callable $transform) {
+    /**
+     * @var string
+     */
+    private $regex;
+
+    /**
+     * @var callable
+     */
+    private $transform;
+
+    public function __construct(string $regex, callable $transform) {
         $this->regex = $regex;
         $this->transform = $transform;
     }

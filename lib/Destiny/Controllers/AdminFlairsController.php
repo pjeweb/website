@@ -155,7 +155,7 @@ class AdminFlairsController {
      * @Audit
      */
     public function uploadImage(): array {
-        return array_map(function($file) {
+        return array_map(static function($file) {
             $imageService = ImageService::instance();
             $upload = $imageService->upload($file, FlairService::FLAIRS_DIR);
             return $imageService->findImageById($imageService->insertImage($upload, 'flairs'));

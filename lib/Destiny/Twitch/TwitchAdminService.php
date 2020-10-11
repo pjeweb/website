@@ -11,7 +11,7 @@ class TwitchAdminService extends AbstractAuthService {
 
     public $provider = AuthProvider::TWITCHBROADCAST;
 
-    function afterConstruct() {
+    public function afterConstruct() {
         parent::afterConstruct();
         $this->authHandler = TwitchBroadcastAuthHandler::instance();
     }

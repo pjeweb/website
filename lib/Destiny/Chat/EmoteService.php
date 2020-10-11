@@ -16,8 +16,8 @@ use PDO;
  */
 class EmoteService extends Service {
 
-    const EMOTES_DIR = _BASEDIR . '/static/emotes/';
-    const LUL_EMOTE_PREFIX = 'LUL';
+    public const EMOTES_DIR = _BASEDIR . '/static/emotes/';
+    public const LUL_EMOTE_PREFIX = 'LUL';
 
     /**
      * @throws DBException
@@ -55,7 +55,7 @@ class EmoteService extends Service {
                 'createdDate' => Date::getSqlDateTime(),
                 'modifiedDate' => Date::getSqlDateTime()
             ]);
-            return intval($conn->lastInsertId());
+            return (int)$conn->lastInsertId();
         } catch (DBALException $e) {
             throw new DBException("Error inserting emote.", $e);
         }
@@ -64,7 +64,7 @@ class EmoteService extends Service {
     /**
      * @throws DBException
      */
-    function removeEmoteById(int $id) {
+    public function removeEmoteById(int $id) {
         try {
             $conn = Application::getDbConn();
             $conn->delete('emotes', ['id' => $id]);
@@ -76,7 +76,7 @@ class EmoteService extends Service {
     /**
      * @throws DBException
      */
-    function removeEmoteByTheme(int $themeId) {
+    public function removeEmoteByTheme(int $themeId) {
         try {
             $conn = Application::getDbConn();
             $conn->delete('emotes', ['theme' => $themeId]);
@@ -88,7 +88,7 @@ class EmoteService extends Service {
     /**
      * @throws DBException
      */
-    function findAllEmotesWithTheme($themeId = null, $publishedOnly = false): array {
+    public function findAllEmotesWithTheme($themeId = null, $publishedOnly = false): array {
         try {
             $conn = Application::getDbConn();
             $stmt = $conn->prepare('
@@ -124,7 +124,7 @@ class EmoteService extends Service {
     /**
      * @throws DBException
      */
-    function findAllEmotes(): array {
+    public function findAllEmotes(): array {
        try {
            $conn = Application::getDbConn();
            $stmt = $conn->prepare('
@@ -151,7 +151,7 @@ class EmoteService extends Service {
      * @return array|false
      * @throws DBException
      */
-    function findEmoteById(int $id) {
+    public function findEmoteById(int $id) {
         try {
             $conn = Application::getDbConn();
             $stmt = $conn->prepare('
@@ -203,7 +203,7 @@ class EmoteService extends Service {
             foreach ($emotes as $v) {
                 fwrite($file, $this->buildEmoteCSS($v));
             }
-            foreach (array_filter($emotes, function($v) { return !empty($v['styles']); }) as $v) {
+            foreach (array_filter($emotes, static function($v) { return !empty($v['styles']); }) as $v) {
                 fwrite($file, $this->buildEmoteStyleCSS($v));
             }
             fclose($file);
@@ -217,16 +217,16 @@ class EmoteService extends Service {
         try {
             $filename = self::EMOTES_DIR . 'emotes.json.' . $cacheKey;
             $file = fopen($filename,'w+');
-            fwrite($file, json_encode(array_map(function($emote){ return [
+            fwrite($file, json_encode(array_map(static function($emote){ return [
                 'prefix' => $emote['prefix'],
-                'twitch' => boolval($emote['twitch']),
+                'twitch' => (bool)$emote['twitch'],
                 'theme' => $emote['theme'],
                 'image' => [[
                     'url' => Config::cdnv() . '/emotes/' . $emote['imageName'],
                     'name' => $emote['imageName'],
                     'mime' => $emote['imageType'],
-                    'height' => intval($emote['height']),
-                    'width' => intval($emote['width']),
+                    'height' => (int)$emote['height'],
+                    'width' => (int)$emote['width'],
                 ]]
             ]; }, $emotes)));
             fclose($file);
@@ -236,11 +236,11 @@ class EmoteService extends Service {
         }
     }
 
-    function buildEmoteStyleCSS(array $emote): string {
+    public function buildEmoteStyleCSS(array $emote): string {
         return str_replace('{PREFIX}', $emote['prefix'], $emote['styles']) . PHP_EOL;
     }
 
-    function buildEmoteCSS(array $emote, bool $relative = true): string {
+    public function buildEmoteCSS(array $emote, bool $relative = true): string {
         $name = $emote['prefix'];
         $img = is_array($emote['image'] ?? null) ? $emote['image'][0] : [
             'name' => $emote['imageName'],
@@ -248,8 +248,8 @@ class EmoteService extends Service {
             'width' => $emote['width']
         ];
         $url = $relative ? $img['name'] : Config::cdnv() . '/emotes/' . $img['name'];
-        $marginTop = -intval($img['height']);
-        $offsetTop = intval($img['height']) * 0.25;
+        $marginTop = -(int)$img['height'];
+        $offsetTop = (int)$img['height'] * 0.25;
         $cssClass = ".emote.$name";
         $c = "$cssClass {\n";
         $c .= "  background-image: url(\"$url\");\n";

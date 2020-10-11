@@ -25,34 +25,34 @@ use function GuzzleHttp\json_encode;
 class Application extends Service {
 
     /** @var CacheProvider */
-    public $cache1 = null;
+    public $cache1;
 
     /** @var CacheProvider */
-    public $cache2 = null;
+    public $cache2;
     
     /** @var Connection */
     protected $dbal;
     
     /** @var SessionInstance */
-    protected $session = null;
+    protected $session;
     
     /** @var Redis */
-    protected $redis = null;
+    protected $redis;
     
     /** @var Router */
-    protected $router = null;
+    protected $router;
 
     /** @var AuditLogger */
-    protected $auditLogger = null;
+    protected $auditLogger;
     
     /** @var callable */
     public $loader;
 
     /** @var Cookie */
-    protected $rememberMeCookie = null;
+    protected $rememberMeCookie;
 
     /** @var Cookie */
-    protected $sessionCookie = null;
+    protected $sessionCookie;
 
     /** @return Connection */
     public static function getDbConn(){
@@ -118,7 +118,7 @@ class Application extends Service {
                 // Use result as response body
                 $response->setBody($result);
             } else if (is_string($result)) {
-                if (substr($result, 0, 9) === 'redirect:') {
+                if (strpos($result, 'redirect:') === 0) {
                     // Redirect response
                     $redirect = trim(substr($result, 9));
                     $response->setStatus(Http::STATUS_OK);
@@ -227,23 +227,23 @@ class Application extends Service {
     private function hasRouteSecurity(Route $route, SessionCredentials $credentials, Request $request): bool {
         // has ANY role
         $secure = $route->getSecure();
-        if (!empty ($secure)) {
-            if (!in_array(true, array_map(function($role) use ($credentials) { return $credentials->hasRole($role); }, $secure))) {
-                return false;
-            }
+        if (!empty ($secure) && !in_array(true, array_map(static function (string $role) use ($credentials) {
+                return $credentials->hasRole($role);
+            }, $secure))) {
+            return false;
         }
         // has ANY feature
         $features = $route->getFeature();
-        if (!empty ($features)) {
-            if (!in_array(true, array_map(function($feature) use ($credentials) { return $credentials->hasFeature($feature); }, $features))) {
-                return false;
-            }
+        if (!empty ($features) && !in_array(true, array_map(static function (string $feature) use ($credentials) {
+                return $credentials->hasFeature($feature);
+            }, $features))) {
+            return false;
         }
         // has ANY private keys
         $keyNames = $route->getPrivateKeys();
         if (!empty($keyNames)) {
             $keyValue = self::getPrivateKeyValueFromRequest($request);
-            if (empty($keyValue) || !in_array(true, array_map(function($keyName) use ($keyValue) { return strcmp(Config::$a['privateKeys'][$keyName], $keyValue) === 0; }, $keyNames))) {
+            if (empty($keyValue) || !in_array(true, array_map(static function($keyName) use ($keyValue) { return strcmp(Config::$a['privateKeys'][$keyName], $keyValue) === 0; }, $keyNames))) {
                 return false;
             }
         }

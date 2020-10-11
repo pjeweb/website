@@ -35,8 +35,8 @@ class Router {
         $method = $request->method ();
         $rawPath = $request->path ();
         $preparedPath = $this->prepareUriPath ( $rawPath );
-        for($i = 0; $i < count ( $this->routes ); ++$i) {
-            if ($this->testRoute ( $this->routes[$i], $preparedPath, $rawPath, $method )) {
+        foreach ($this->routes as $i => $iValue) {
+            if ($this->testRoute ( $iValue, $preparedPath, $rawPath, $method )) {
                 return $this->routes[$i];
             }
         }
@@ -61,10 +61,12 @@ class Router {
      */
     protected function prepareUriPath(string $path): string {
         $extension = pathinfo ( $path, PATHINFO_EXTENSION );
-        if (! empty ( $extension ))
-            $path = substr ( $path, 0, - (strlen ( $extension ) + 1) );
-        if (strlen ( $path ) > 1 && substr ( $path, - 1 ) === '/')
-            $path = substr ( $path, 0, - 1 );
+        if (! empty ( $extension )) {
+            $path = substr($path, 0, -(strlen($extension) + 1));
+        }
+        if (strlen ( $path ) > 1 && substr ( $path, - 1 ) === '/') {
+            $path = substr($path, 0, -1);
+        }
         return $path;
     }
 

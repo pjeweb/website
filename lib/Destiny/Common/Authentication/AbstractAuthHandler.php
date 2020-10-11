@@ -50,7 +50,7 @@ abstract class AbstractAuthHandler extends Service implements AuthenticationHand
     }
 
     public function isTokenExpired(array $auth): bool {
-        return Date::getDateTimePlusSeconds($auth['createdDate'], intval($auth['expiresIn'] ?? '3600')) < Date::now();
+        return Date::getDateTimePlusSeconds($auth['createdDate'], (int)($auth['expiresIn'] ?? '3600')) < Date::now();
     }
 
     public function getUserProfileUrl(string $username): string {

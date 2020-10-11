@@ -17,7 +17,7 @@ class StreamElementsAuthHandler extends AbstractAuthHandler {
     private $authBase = 'https://api.streamelements.com/oauth2';
     public $authProvider = AuthProvider::STREAMELEMENTS;
 
-    function getAuthorizationUrl($scope = [], $claims = ''): string {
+    public function getAuthorizationUrl($scope = [], $claims = ''): string {
         $conf = $this->getAuthProviderConf();
         return "$this->authBase/authorize?" . http_build_query([
             'response_type' => 'code',
@@ -29,7 +29,7 @@ class StreamElementsAuthHandler extends AbstractAuthHandler {
     /**
      * @throws Exception
      */
-    function getToken(array $params): array {
+    public function getToken(array $params): array {
         FilterParams::required($params, 'code');
         $conf = $this->getAuthProviderConf();
         $response = $this->getHttpClient()->post("$this->authBase/token", [
@@ -42,7 +42,7 @@ class StreamElementsAuthHandler extends AbstractAuthHandler {
                 'code' => $params['code']
             ]
         ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
+        if ($response->getStatusCode() === Http::STATUS_OK) {
             $data = json_decode((string)$response->getBody(), true);
             FilterParams::required($data, 'access_token');
             FilterParams::declared($data, 'refresh_token');
@@ -54,7 +54,7 @@ class StreamElementsAuthHandler extends AbstractAuthHandler {
     /**
      * @throws Exception
      */
-    function renewToken(string $refreshToken): array {
+    public function renewToken(string $refreshToken): array {
         $conf = $this->getAuthProviderConf();
         $response = $this->getHttpClient()->post("$this->authBase/token", [
             'headers' => ['User-Agent' => Config::userAgent()],
@@ -66,7 +66,7 @@ class StreamElementsAuthHandler extends AbstractAuthHandler {
                 'refresh_token' => $refreshToken
             ]
         ]);
-        if (!empty($response) && $response->getStatusCode() == Http::STATUS_OK) {
+        if ($response !== null && $response->getStatusCode() === Http::STATUS_OK) {
             $data = json_decode((string)$response->getBody(), true);
             FilterParams::required($data, 'access_token');
             return $data;
@@ -103,7 +103,7 @@ class StreamElementsAuthHandler extends AbstractAuthHandler {
                 'Authorization' => "OAuth $accessToken",
             ]
         ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
+        if ($response->getStatusCode() === Http::STATUS_OK) {
             return json_decode((string)$response->getBody(), true);
         }
         throw new Exception("Failed to retrieve user info.");

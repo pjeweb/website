@@ -38,7 +38,7 @@ class OAuthController {
             FilterParams::required($params, 'code_challenge');          // The code challenge generated as previously described
             //FilterParams::required($params, 'code_challenge_method');         // either plain or S256, depending on whether the challenge is the plain verifier string or the SHA256 hash of the string. If this parameter is omitted, the server will assume plain
 
-            $params['code_challenge_method'] = isset($params['code_challenge_method']) ? $params['code_challenge_method'] : 'S256';
+            $params['code_challenge_method'] = $params['code_challenge_method'] ?? 'S256';
 
             $oauthService = DggOAuthService::instance();
             $client = $oauthService->ensureAuthClient((string) $params['client_id']);
@@ -49,7 +49,7 @@ class OAuthController {
             if ($params['code_challenge_method'] != 'S256') {
                 throw new Exception("code_challenge_method must be 'S256'");
             }
-            if (mb_substr($params['redirect_uri'], 0, mb_strlen($client['redirectUrl'])) != $client['redirectUrl']) {
+            if (mb_strpos($params['redirect_uri'], $client['redirectUrl']) !== 0) {
                 throw new Exception("redirect_uri does not match the client redirect url.");
             }
 

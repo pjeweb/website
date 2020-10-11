@@ -62,37 +62,44 @@ class PrivateMessageController {
             $user = $userService->getUserById($userId);
             $recipients = array_unique(array_map('strtolower', $params['recipients']));
 
-            if (empty($recipients))
+            if (empty($recipients)) {
                 throw new Exception('Invalid recipients list');
+            }
 
-            if (count($recipients) === 1 && $recipients[0] == $username)
+            if (count($recipients) === 1 && $recipients[0] == $username) {
                 throw new Exception('Cannot send messages to yourself.');
+            }
 
             // Remove the user if its in the list
             $recipients = array_diff($recipients, [$username]);
 
             $ban = $chatBanService->getUserActiveBan($userId);
-            if (!empty($ban))
+            if (!empty($ban)) {
                 throw new Exception ("You cannot send messages while you are banned.");
+            }
 
             $oldEnough = $userService->isUserOldEnough($userId);
-            if (!$oldEnough)
+            if (!$oldEnough) {
                 throw new Exception ("Your account is not old enough to send messages.");
+            }
 
             $recipients = $userService->getUserIdsByUsernames($recipients);
 
-            if (empty($recipients))
+            if (empty($recipients)) {
                 throw new Exception('Invalid recipient value(s)');
+            }
 
-            if (count($recipients) > 20)
+            if (count($recipients) > 20) {
                 throw new Exception('You may only send to maximum 20 users.');
+            }
 
             $credentials = new SessionCredentials ($user);
             foreach ($recipients as $recipient) {
                 $recipientId = $recipient['userId'];
                 $canSend = $privateMessageService->canSend($credentials, $recipientId);
-                if (!$canSend)
+                if (!$canSend) {
                     throw new Exception ("You have sent too many messages, throttled.");
+                }
 
                 $targetuser = $userService->getUserById($recipientId);
                 $message = [
@@ -135,8 +142,9 @@ class PrivateMessageController {
         $userId = Session::getCredentials ()->getUserId ();
         $username = Session::getCredentials ()->getUsername ();
         $targetuser = $userService->getUserById($params['targetuserid']);
-        if(empty($targetuser))
+        if(empty($targetuser)) {
             throw new Exception('Invalid user');
+        }
         $viewModel->targetuser = $targetuser;
         $viewModel->username = $username;
         $viewModel->userId = $userId;
@@ -156,7 +164,7 @@ class PrivateMessageController {
             foreach ($params['selected'] as $target) {
                 $privateMessageService->markConversationDeleted(
                     Session::getCredentials()->getUserId(),
-                    intval($target)
+                    (int)$target
                 );
             }
             Session::setSuccessBag('Messages deleted');
@@ -178,7 +186,7 @@ class PrivateMessageController {
             foreach ($params['selected'] as $target) {
                 $privateMessageService->markMessagesRead(
                     Session::getCredentials()->getUserId(),
-                    intval($target)
+                    (int)$target
                 );
             }
             Session::setSuccessBag('Messages read');
@@ -219,7 +227,7 @@ class PrivateMessageController {
         $privateMessageService = PrivateMessageService::instance();
         $start = $params['s'] ?? 0;
         // TODO make this generic mysql return
-        return $this->applyUTCTimestamp($privateMessageService->getMessagesInboxByUserId($userId, intval($start), 25));
+        return $this->applyUTCTimestamp($privateMessageService->getMessagesInboxByUserId($userId, (int)$start, 25));
     }
 
     /**
@@ -235,7 +243,7 @@ class PrivateMessageController {
         $start = $params['s'] ?? 0;
         $userId = Session::getCredentials()->getUserId();
         $targetuser = $userService->getUserByUsername($params['username']);
-        $messages = $privateMessageService->getMessagesBetweenUserIdAndTargetUserId($userId, intval($targetuser['userId']), intval($start), 25);
+        $messages = $privateMessageService->getMessagesBetweenUserIdAndTargetUserId($userId, (int)$targetuser['userId'], (int)$start, 25);
         $privateMessageService->markMessagesRead($userId, $targetuser['userId']);
         // TODO make this generic mysql return
         return $this->applyUTCTimestamp($messages);
@@ -264,7 +272,7 @@ class PrivateMessageController {
         try {
             FilterParams::required($params, 'id');
             $privateMessageService = PrivateMessageService::instance();
-            if (!$privateMessageService->markMessageRead(intval($params['id']), Session::getCredentials()->getUserId())) {
+            if (!$privateMessageService->markMessageRead((int)$params['id'], Session::getCredentials()->getUserId())) {
                 throw new Exception('Invalid message');
             }
         } catch (Exception $e) {
@@ -274,7 +282,7 @@ class PrivateMessageController {
     }
 
     private function applyUTCTimestamp(array $messages): array {
-        return array_map(function (&$a) {
+        return array_map(static function (&$a) {
             $a['timestamp'] = Date::getDateTime($a['timestamp'])->format(Date::FORMAT);
             return $a;
         }, $messages);

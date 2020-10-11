@@ -11,7 +11,6 @@ use Destiny\Common\Service;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\Utils\FilterParamsException;
 use Destiny\Common\Utils\Http;
-use Destiny\Twitch\TwitchAuthHandler;
 use function GuzzleHttp\json_decode;
 
 /**
@@ -20,21 +19,21 @@ use function GuzzleHttp\json_decode;
  */
 class TwitchWebHookService extends Service {
 
-    const API_BASE = 'https://api.twitch.tv/helix';
-    const MODE_SUBSCRIBE = 'subscribe';
-    const MODE_UNSUBSCRIBE = 'unsubscribe';
-    const MODE_DENIED = 'denied';
-    const GET_TOPIC_KEY = 'k';
+    public const API_BASE = 'https://api.twitch.tv/helix';
+    public const MODE_SUBSCRIBE = 'subscribe';
+    public const MODE_UNSUBSCRIBE = 'unsubscribe';
+    public const MODE_DENIED = 'denied';
+    public const GET_TOPIC_KEY = 'k';
 
-    const TOPIC_STREAM = 'topic-stream-changed';
-    const TOPIC_FOLLOW = 'topic-user-follows';
-    const TOPIC_USER_CHANGED = 'topic-user-changed';
-    const TOPIC_GAME_ANALYTICS = 'topic-game-analytics';
-    const TOPIC_EXTENSION_ANALYTICS = 'topic-extension-analytics';
+    public const TOPIC_STREAM = 'topic-stream-changed';
+    public const TOPIC_FOLLOW = 'topic-user-follows';
+    public const TOPIC_USER_CHANGED = 'topic-user-changed';
+    public const TOPIC_GAME_ANALYTICS = 'topic-game-analytics';
+    public const TOPIC_EXTENSION_ANALYTICS = 'topic-extension-analytics';
 
-    const CACHE_KEY_PREFIX = 'twitch.stream.';
-    const CACHE_KEY_STREAM_STATUS = 'streamstatus';
-    const CACHE_KEY_ACCESS_TOKEN = 'accesstoken';
+    public const CACHE_KEY_PREFIX = 'twitch.stream.';
+    public const CACHE_KEY_STREAM_STATUS = 'streamstatus';
+    public const CACHE_KEY_ACCESS_TOKEN = 'accesstoken';
 
     /**
      * @see https://dev.twitch.tv/docs/api/webhooks-reference/#subscribe-tounsubscribe-from-events
@@ -64,7 +63,7 @@ class TwitchWebHookService extends Service {
                 'hub.secret' => $conf['client_secret']
             ]
         ]);
-        if ($response->getStatusCode() == Http::STATUS_ACCEPTED) {
+        if ($response->getStatusCode() === Http::STATUS_ACCEPTED) {
             return true;
         }
         throw new Exception('Error sending twitch webhook subscription request. ' . $response->getBody());
@@ -141,10 +140,8 @@ class TwitchWebHookService extends Service {
                         }
                         return;
                     }
-                } else {
-                    if ($waslive && $userId == Config::$a['twitch']['user']) {
-                        ChatRedisService::instance()->sendBroadcast("Destiny is now offline :( ");
-                    }
+                } else if ($waslive && $userId == Config::$a['twitch']['user']) {
+                    ChatRedisService::instance()->sendBroadcast("Destiny is now offline :( ");
                 }
                 // OFFLINE
                 $cache->save(self::CACHE_KEY_PREFIX . $userId, ['time' => time(), 'live' => false]);

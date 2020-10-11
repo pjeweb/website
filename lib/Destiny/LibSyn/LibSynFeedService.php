@@ -14,12 +14,12 @@ class LibSynFeedService extends Service {
     /**
      * @return array|null
      */
-    function getFeed(string $name) {
+    public function getFeed(string $name) {
         $client = HttpClient::instance();
         $response = $client->get("http://$name.libsyn.com/render-type/json", [
             'headers' => ['User-Agent' => Config::userAgent()]
         ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
+        if ($response->getStatusCode() === Http::STATUS_OK) {
             return \GuzzleHttp\json_decode($response->getBody(), true);
         }
         return null;

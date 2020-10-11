@@ -18,7 +18,7 @@ class SessionInstance {
     /**
      * @var SessionCredentials
      */
-    protected $credentials = null;
+    protected $credentials;
 
     public function __construct(array $params = null) {
         $this->credentials = new SessionCredentials();
@@ -94,7 +94,7 @@ class SessionInstance {
     }
 
     public function isEmpty(string $name): bool {
-        $value = (isset($_SESSION[$name])) ? $_SESSION[$name] : null;
+        $value = $_SESSION[$name] ?? null;
         return empty($value);
     }
 
@@ -102,7 +102,7 @@ class SessionInstance {
      * @return mixed|null
      */
     public function get(string $name) {
-        return isset($_SESSION[$name]) ? $_SESSION[$name] : null;
+        return $_SESSION[$name] ?? null;
     }
 
     /**

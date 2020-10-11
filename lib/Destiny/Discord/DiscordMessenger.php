@@ -45,7 +45,7 @@ class DiscordMessenger extends Service {
             $this->guzzle->post($webhook, [
                 RequestOptions::JSON => [
                     'text' => $text,
-                    'username' => empty($username) ? Config::$a['meta']['shortName'] : $username,
+                    'username' => Config::$a['meta']['shortName'],
                     'attachments' => $attachments
                 ],
             ]);

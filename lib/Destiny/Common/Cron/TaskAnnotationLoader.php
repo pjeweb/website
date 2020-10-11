@@ -22,7 +22,7 @@ abstract class TaskAnnotationLoader {
     private static function loadClass(ReflectionClass $annot, ReflectionClass $class, Reader $reader, Scheduler $scheduler) {
         /** @var Schedule $annotation */
         $annotation = $reader->getClassAnnotation($class, $annot->getName());
-        if (!empty($annotation)) {
+        if ($annotation !== null) {
             $scheduler->addTask($class->getShortName(), [
                 'class' => $class->getName(),
                 'action' => $class->getShortName(),

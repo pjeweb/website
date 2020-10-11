@@ -22,9 +22,9 @@ use Destiny\Common\Config;
 class CryptoOpenSSL {
 
     // IV 16byte (128bit), Key 32byte (256bit) in CTR (Counter) mode
-    const CIPHER_ALGORITHM = 'aes-256-ctr';
-    const HMAC_ALGORITHM = 'sha512';
-    const HMAC_LENGTH = 64;
+    public const CIPHER_ALGORITHM = 'aes-256-ctr';
+    public const HMAC_ALGORITHM = 'sha512';
+    public const HMAC_LENGTH = 64;
 
     /**
      * encrypt produces message in the form of:
@@ -33,7 +33,7 @@ class CryptoOpenSSL {
      * when providing the data, try to avoid using something easily guessable
      * so maybe include something random
      */
-    static public function encrypt(string $data): string {
+    public static function encrypt(string $data): string {
         $seed = Config::$a['crypto']['seed'];
         $key = Config::$a['crypto']['key'];
         // initialize the random IV
@@ -48,7 +48,7 @@ class CryptoOpenSSL {
         return base64_encode($crypteddata);
     }
 
-    static public function decrypt(string $data): string {
+    public static function decrypt(string $data): string {
         $seed = Config::$a['crypto']['seed'];
         $key = Config::$a['crypto']['key'];
         // base64 decode
@@ -76,8 +76,8 @@ class CryptoOpenSSL {
         return openssl_decrypt($crypteddata, self::CIPHER_ALGORITHM, $key, OPENSSL_RAW_DATA, $iv);
     }
 
-    static protected function constantTimeCompare(string $known = null, string $given = null): bool {
-        if (strlen($known) == 0) {
+    protected static function constantTimeCompare(string $known = null, string $given = null): bool {
+        if ($known == '') {
             return false;
         }
         $res = strlen($given) ^ strlen($known);

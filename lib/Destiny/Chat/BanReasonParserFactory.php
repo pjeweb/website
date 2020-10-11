@@ -1,9 +1,6 @@
 <?php
 namespace Destiny\Chat;
 
-use Destiny\Chat\BanReasonParser;
-use Destiny\Chat\BanReasonParseRule;
-
 class BanReasonParserFactory {
     public static function create(): BanReasonParser {
         $rules = [

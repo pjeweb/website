@@ -1,7 +1,6 @@
 <?php
 namespace Destiny\Chat;
 
-use Destiny\Chat\BanReasonParserFactory;
 use Destiny\Common\Application;
 use Destiny\Common\DBException;
 use Destiny\Common\Service;
@@ -104,7 +103,7 @@ class ChatBanService extends Service {
         try {
             $conn = Application::getDbConn();
             $conn->insert('bans', $ban);
-            return intval($conn->lastInsertId());
+            return (int)$conn->lastInsertId();
         } catch (DBALException $e) {
             throw new DBException("Error inserting user ban.", $e);
         }
@@ -287,7 +286,7 @@ class ChatBanService extends Service {
             $bans = $stmt->fetchAll();
 
             $parser = BanReasonParserFactory::create();
-            $bans = array_map(function($b) use ($parser) { return $parser->transformBan($b); }, $bans);
+            $bans = array_map(static function($b) use ($parser) { return $parser->transformBan($b); }, $bans);
 
             return $bans;
         } catch (DBALException $e) {

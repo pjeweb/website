@@ -16,13 +16,6 @@ use Destiny\Common\Session\Session;
 use Destiny\Common\User\UserRole;
 use Destiny\Common\Utils\FilterParams;
 use Destiny\Common\ViewModel;
-use Destiny\Discord\DiscordAuthHandler;
-use Destiny\Google\GoogleAuthHandler;
-use Destiny\Reddit\RedditAuthHandler;
-use Destiny\StreamElements\StreamElementsAuthHandler;
-use Destiny\StreamLabs\StreamLabsAuthHandler;
-use Destiny\Twitch\TwitchAuthHandler;
-use Destiny\Twitter\TwitterAuthHandler;
 
 /**
  * @Controller
@@ -35,9 +28,9 @@ class LoginController {
      */
     public function login(array $params, ViewModel $model): string {
         Session::remove('isConnectingAccount');
-        $grant = isset($params['grant']) ? $params['grant'] : null;
-        $follow = (isset($params ['follow'])) ? $params ['follow'] : '';
-        $uuid = (isset($params ['uuid'])) ? $params ['uuid'] : '';
+        $grant = $params['grant'] ?? null;
+        $follow = $params ['follow'] ?? '';
+        $uuid = $params ['uuid'] ?? '';
 
         if (!empty($uuid)) {
             try {

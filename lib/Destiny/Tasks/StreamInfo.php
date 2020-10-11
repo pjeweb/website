@@ -27,8 +27,8 @@ class StreamInfo implements TaskInterface {
             if (!empty($path)) {
                 $info['preview'] = Config::cdni() . '/' . $path;
             }
-            $islive = !empty($info['host']) ? false : (($info['live'] == true) ? true : false);
-            $cache->save(TwitchWebHookService::CACHE_KEY_PREFIX . Config::$a['twitch']['id'], ['time' => time(), 'live' => $islive]);
+            $isLive = !empty($info['host']) ? false : ($info['live'] == true);
+            $cache->save(TwitchWebHookService::CACHE_KEY_PREFIX . Config::$a['twitch']['id'], ['time' => time(), 'live' => $isLive]);
             $cache->save(TwitchWebHookService::CACHE_KEY_STREAM_STATUS, $info);
         }
     }

@@ -22,18 +22,20 @@ class RedisUtils {
             $hash = file_get_contents($hashFilename);
             if ($hash) {
                 $ret = $redis->evalSha($hash, $arguments, $numKeys);
-                if ($ret) return $ret;
+                if ($ret) {
+                    return $ret;
+                }
             }
         }
 
-        $hash = $redis->script('load', file_get_contents($dir . $scriptname . '.lua'));
-        if (!$hash) {
+        $hash2 = $redis->script('load', file_get_contents($dir . $scriptname . '.lua'));
+        if (!$hash2) {
             throw new Exception('Unable to load script');
         }
-        if (!file_put_contents($dir . $scriptname . '.hash', $hash)) {
+        if (!file_put_contents($dir . $scriptname . '.hash', $hash2)) {
             throw new Exception('Unable to save hash');
         }
-        return $redis->evalSha($hash, $arguments, $numKeys);
+        return $redis->evalSha($hash2, $arguments, $numKeys);
     }
 
 }

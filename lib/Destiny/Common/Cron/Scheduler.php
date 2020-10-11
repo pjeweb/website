@@ -40,7 +40,7 @@ class Scheduler {
             $nextExecute->modify('+' . $task['frequency'] . ' ' . $task['period']);
             if ($taskNeverRun || time() > $nextExecute->getTimestamp()) {
                 try {
-                    $task['executeCount'] = intval($task['executeCount']) + 1;
+                    $task['executeCount'] = (int)$task['executeCount'] + 1;
                     $task['lastExecuted'] = date(DateTime::ATOM);
                     if ($taskNeverRun) {
                         $this->insertTask($task);
@@ -75,7 +75,7 @@ class Scheduler {
                     $task = array_merge($task, $data);
                 }
             }
-            Log::info('Schedule loaded ['. join(',', array_keys($this->schedule)) .']');
+            Log::info('Schedule loaded ['. implode(',', array_keys($this->schedule)) .']');
         } catch (DBALException $e) {
             throw new DBException("Error loading tasks", $e);
         }

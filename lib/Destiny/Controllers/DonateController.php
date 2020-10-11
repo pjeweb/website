@@ -73,7 +73,7 @@ class DonateController {
         try {
             FilterParams::required($params, 'amount');
             FilterParams::declared($params, 'message');
-            $params['amount'] = floatval($params['amount']);
+            $params['amount'] = (float)$params['amount'];
             if ($params['amount'] < Config::$a['commerce']['minimum_donation']) {
                 throw new FilterParamsException('Only donations of $5.00 more more are accepted');
             }
@@ -149,7 +149,7 @@ class DonateController {
             }
             $username = $donation['username'];
             $userid = Session::hasRole(UserRole::USER) ? Session::getCredentials()->getUserId() :  -1;
-            if (!empty($donation['userid']) && intval($donation['userid']) !== intval($userid)) {
+            if (!empty($donation['userid']) && (int)$donation['userid'] !== (int)$userid) {
                 throw new Exception ('Permission to donation denied');
             }
             if ($params ['success'] == '0' || $params ['success'] == 'false' || $params ['success'] === false) {

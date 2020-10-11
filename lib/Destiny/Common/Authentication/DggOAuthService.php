@@ -316,7 +316,7 @@ class DggOAuthService extends Service {
     }
 
     public function hasAccessTokenExpired(array $token): bool {
-        $expireIn = intval($token['expireIn']);
+        $expireIn = (int)$token['expireIn'];
         return $expireIn > 0 ? (Date::getDateTimePlusSeconds($token['createdDate'], $expireIn) < Date::getDateTime()) : false;
     }
 

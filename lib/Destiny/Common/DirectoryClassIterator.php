@@ -14,13 +14,15 @@ use SplFileInfo;
  * Reads all files in a folder and finds the .php ones with classes in them
  */
 class DirectoryClassIterator implements Iterator {
-    
+    /**
+     * @var int
+     */
     private $position = 0;
     
     /**
      * @var ReflectionClass[]
      */
-    private $array = [];
+    private $array;
     
     /**
      * @var string
@@ -38,11 +40,10 @@ class DirectoryClassIterator implements Iterator {
      * @param string $path
      * @throws ReflectionException
      */
-    public function __construct($base, $path) {
+    public function __construct(string $base, string $path) {
         $this->base = $base;
         $this->path = $path;
         $this->array = $this->getClasses ();
-        $this->position = 0;
     }
 
     /**
@@ -53,7 +54,7 @@ class DirectoryClassIterator implements Iterator {
      * @throws ReflectionException
      */
     private function getClasses(): array {
-        $files = self::getFiles ();
+        $files = $this->getFiles ();
         $classes = [];
         // Run through all the public classes, that have Action annotations, check for Route annotations
         foreach ( $files as $file ) {
@@ -62,11 +63,15 @@ class DirectoryClassIterator implements Iterator {
             $class = str_replace ( '/', '\\', substr ( $file->getPathname (), strlen ( $this->base ), - 4 ) );
             
             // No class found, no annotations
-            if (! $class) continue;
+            if (! $class) {
+                continue;
+            }
             
             // Make sure the class is not abstract
             $refl = new ReflectionClass ( $class );
-            if ($refl->isAbstract ()) continue;
+            if ($refl->isAbstract ()) {
+                continue;
+            }
             
             $classes [] = $refl;
         }

@@ -2,11 +2,11 @@
 namespace Destiny\Chat;
 
 class BanReasonParser {
-    const BOT_USERNAME = 'Bot';
+    public const BOT_USERNAME = 'Bot';
 
     public $rules;    
 
-    function __construct(array $rules) {
+    public function __construct(array $rules) {
         $this->rules = $rules;
     }
 
@@ -28,6 +28,6 @@ class BanReasonParser {
     }
 
     public function isBotBan($ban): bool {
-        return $ban['banningusername'] === BanReasonParser::BOT_USERNAME;
+        return $ban['banningusername'] === self::BOT_USERNAME;
     }
 }

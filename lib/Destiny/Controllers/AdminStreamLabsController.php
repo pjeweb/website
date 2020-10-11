@@ -21,7 +21,7 @@ use function GuzzleHttp\json_decode;
  */
 class AdminStreamLabsController extends AdminIntegrationController {
 
-    function afterConstruct() {
+    public function afterConstruct() {
         $this->authHandler = StreamLabsAuthHandler::instance();
         $this->authenticatedService = StreamLabsService::instance();
         $this->title = 'StreamLabs';

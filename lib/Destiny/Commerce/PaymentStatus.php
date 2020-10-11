@@ -3,13 +3,13 @@ namespace Destiny\Commerce;
 
 abstract class PaymentStatus {
     
-    const _NEW = 'New';
-    const ACTIVE = 'Active';
-    const PENDING = 'Pending';
-    const COMPLETED = 'Completed';
-    const CANCELLED = 'Cancelled';
-    const ERROR = 'Error';
-    const FAILED = 'Failed';
-    const SKIPPED = 'Skipped';
+    public const _NEW = 'New';
+    public const ACTIVE = 'Active';
+    public const PENDING = 'Pending';
+    public const COMPLETED = 'Completed';
+    public const CANCELLED = 'Cancelled';
+    public const ERROR = 'Error';
+    public const FAILED = 'Failed';
+    public const SKIPPED = 'Skipped';
 
 }

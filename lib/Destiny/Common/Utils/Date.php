@@ -11,9 +11,9 @@ use Exception;
  */
 abstract class Date {
     
-    const STRING_FORMAT_YEAR = 'g:ia, D jS F Y e';
-    const STRING_FORMAT = 'M jS, Y g:iA T';
-    const FORMAT = DATE_ISO8601;
+    public const STRING_FORMAT_YEAR = 'g:ia, D jS F Y e';
+    public const STRING_FORMAT = 'M jS, Y g:iA T';
+    public const FORMAT = DATE_ISO8601;
 
     public static function now(): DateTime {
         return new DateTime();
@@ -37,7 +37,7 @@ abstract class Date {
     }
 
     public static function getDateTimePlusSeconds($time = 'NOW', int $seconds = 0): DateTime {
-        $date = Date::getDateTime($time);
+        $date = self::getDateTime($time);
         try { $date->add(new DateInterval("PT". $seconds ."S")); } catch (Exception $e) {/* IGNORED */}
         return $date;
     }
@@ -112,7 +112,9 @@ abstract class Date {
         if ($dayDiff == 0) {
             if ($diff < 60) {
                 return 'Just now';
-            } elseif ($diff < 120) {
+            }
+
+            if ($diff < 120) {
                 return '1 minute ago';
             } elseif ($diff < 3600) {
                 return floor($diff / 60) . ' minutes ago';

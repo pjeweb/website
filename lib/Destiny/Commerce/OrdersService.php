@@ -99,7 +99,7 @@ class OrdersService extends Service {
                 'paymentDate' => $payment ['paymentDate'],
                 'createdDate' => Date::getDateTime ( 'NOW' )->format ( 'Y-m-d H:i:s' )
             ]);
-            return intval($conn->lastInsertId());
+            return (int)$conn->lastInsertId();
         } catch (DBALException $e) {
             throw new DBException("Error adding payment", $e);
         }

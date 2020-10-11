@@ -23,7 +23,7 @@ class TwitchWebhookController {
      * @HttpMethod ({"GET"})
      * @ResponseBody
      */
-    function notify(Request $request): string {
+    public function notify(Request $request): string {
         try {
             $webhookService = TwitchWebHookService::instance();
             return $webhookService->handleIncomingNotify($request);
@@ -41,7 +41,7 @@ class TwitchWebhookController {
      * @HttpMethod ({"POST"})
      * @ResponseBody
      */
-    function callback(Request $request): string {
+    public function callback(Request $request): string {
         try {
             $webhookService = TwitchWebHookService::instance();
             return $webhookService->handleIncomingWebhook($request);

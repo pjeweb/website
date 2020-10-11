@@ -62,11 +62,12 @@ class TwitchApiService extends Service {
                 'host' => $id
             ]
         ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
+        if ($response->getStatusCode() === Http::STATUS_OK) {
             try {
                 $json = \GuzzleHttp\json_decode($response->getBody(), true);
-                if (!empty($json) && isset($json['hosts']))
+                if (!empty($json) && isset($json['hosts'])) {
                     return $json['hosts'][0];
+                }
                 return $json;
             } catch (InvalidArgumentException $e) {
                 Log::error("Failed to parse channel host. " . $e->getMessage());
@@ -92,7 +93,7 @@ class TwitchApiService extends Service {
                 'limit' => $limit
             ]
         ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
+        if ($response->getStatusCode() === Http::STATUS_OK) {
             try {
                 return \GuzzleHttp\json_decode($response->getBody(), true);
             } catch (InvalidArgumentException $e) {
@@ -116,7 +117,7 @@ class TwitchApiService extends Service {
                 'Client-ID' => $conf['client_id']
             ]
         ]);
-        if($response->getStatusCode() == Http::STATUS_OK) {
+        if($response->getStatusCode() === Http::STATUS_OK) {
             try {
                 $data = \GuzzleHttp\json_decode($response->getBody(), true);
                 if (isset($data['status']) && $data['status'] == 503) {
@@ -143,7 +144,7 @@ class TwitchApiService extends Service {
                 'Client-ID' => $conf['client_id'],
             ]
         ]);
-        if($response->getStatusCode() == Http::STATUS_OK) {
+        if($response->getStatusCode() === Http::STATUS_OK) {
             try {
                 return \GuzzleHttp\json_decode($response->getBody(), true);
             } catch (InvalidArgumentException $e) {

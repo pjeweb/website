@@ -10,6 +10,6 @@ interface TaskInterface {
      *
      * @throws Exception
      */
-    function execute();
+    public function execute();
 
 }

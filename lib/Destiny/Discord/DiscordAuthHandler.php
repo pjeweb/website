@@ -18,11 +18,11 @@ class DiscordAuthHandler extends AbstractAuthHandler {
     private $apiBase = 'https://discordapp.com/api';
     public $authProvider = AuthProvider::DISCORD;
 
-    function getAuthorizationUrl($scope = ['identify', 'email'], $claims = ''): string {
+    public function getAuthorizationUrl($scope = ['identify', 'email'], $claims = ''): string {
         $conf = $this->getAuthProviderConf();
         return "$this->authBase/authorize?" . http_build_query([
             'response_type' => 'code',
-            'scope' => join(' ', $scope),
+            'scope' => implode(' ', $scope),
             'state' => md5(time() . 'ifC35_'),
             'client_id' => $conf['client_id'],
             'redirect_uri' => $conf['redirect_uri']
@@ -32,7 +32,7 @@ class DiscordAuthHandler extends AbstractAuthHandler {
     /**
      * @throws Exception
      */
-    function getToken(array $params): array {
+    public function getToken(array $params): array {
         FilterParams::required($params, 'code');
         $conf = $this->getAuthProviderConf();
         $client = $this->getHttpClient();
@@ -49,7 +49,7 @@ class DiscordAuthHandler extends AbstractAuthHandler {
                 'code' => $params['code']
             ]
         ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
+        if ($response->getStatusCode() === Http::STATUS_OK) {
             $data = json_decode((string)$response->getBody(), true);
             FilterParams::required($data, 'access_token');
             return $data;
@@ -68,7 +68,7 @@ class DiscordAuthHandler extends AbstractAuthHandler {
                 'Authorization' => "Bearer $accessToken"
             ]
         ]);
-        if ($response->getStatusCode() == Http::STATUS_OK) {
+        if ($response->getStatusCode() === Http::STATUS_OK) {
             $info = json_decode((string)$response->getBody(), true);
             if (empty($info) ) {
                 throw new Exception ('Invalid user info response');
@@ -81,7 +81,7 @@ class DiscordAuthHandler extends AbstractAuthHandler {
     /**
      * @throws Exception
      */
-    function mapTokenResponse(array $token): OAuthResponse {
+    public function mapTokenResponse(array $token): OAuthResponse {
         $data = $this->getUserInfo($token['access_token']);
         FilterParams::required($data, 'username');
         return new OAuthResponse([
@@ -100,7 +100,7 @@ class DiscordAuthHandler extends AbstractAuthHandler {
     /**
      * @throws Exception
      */
-    function renewToken(string $refreshToken): array {
+    public function renewToken(string $refreshToken): array {
         throw new Exception("Not implemented");
         // TODO Implement
     }

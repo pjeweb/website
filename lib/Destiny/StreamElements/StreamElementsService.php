@@ -16,7 +16,7 @@ class StreamElementsService extends AbstractAuthService {
     public $authBase = 'https://api.streamelements.com/oauth2/validate';
     public $provider = AuthProvider::STREAMELEMENTS;
 
-    function afterConstruct() {
+    public function afterConstruct() {
         parent::afterConstruct();
         $this->authHandler = StreamLabsAuthHandler::instance();
     }

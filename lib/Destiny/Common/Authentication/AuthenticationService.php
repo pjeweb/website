@@ -30,10 +30,10 @@ use Destiny\Twitter\TwitterAuthHandler;
  */
 class AuthenticationService extends Service {
 
-    const REGEX_VALID_USERNAME = '/^[A-Za-z0-9_]{3,20}$/';
-    const REGEX_REPLACE_CHAR_USERNAME = '/[^A-Za-z0-9_]/';
-    const USERNAME_MIN = 3;
-    const USERNAME_MAX = 20;
+    public const REGEX_VALID_USERNAME = '/^[A-Za-z0-9_]{3,20}$/';
+    public const REGEX_REPLACE_CHAR_USERNAME = '/[^A-Za-z0-9_]/';
+    public const USERNAME_MIN = 3;
+    public const USERNAME_MAX = 20;
 
     /**
      * @throws Exception
@@ -98,7 +98,7 @@ class AuthenticationService extends Service {
         // `japstiny` and `jamstiny` is 1. Only one letter has to be
         // replaced/inserted/deleted to change `japstiny` to `jamstiny`.
         $usernamePrefix = substr($normalizedUsername, 0, strlen($normalizedPrefix));
-        if (substr($normalizedUsername, 0, 2) == substr($normalizedPrefix, 0, 2) && levenshtein($normalizedPrefix, $usernamePrefix) <= 2) {
+        if (strpos($normalizedUsername, substr($normalizedPrefix, 0, 2)) === 0 && levenshtein($normalizedPrefix, $usernamePrefix) <= 2) {
             throw new Exception("Username is invalid because it has too many like characters to the emote $emotePrefix.");
         }
     }
@@ -162,7 +162,7 @@ class AuthenticationService extends Service {
         $app = Application::instance();
         $session = $app->getSession();
         $cookie = $app->getSessionCookie();
-        if (!empty($session) || !empty($cookie)) {
+        if ($session !== null || $cookie !== null) {
             $session->setupCookie($cookie);
         }
         //
@@ -189,7 +189,7 @@ class AuthenticationService extends Service {
         if (Session::hasRole(UserRole::USER)) {
             $creds = Session::getCredentials();
             $userId = $creds->getUserId();
-            if (!empty($userId) && $this->isUserFlaggedForUpdate($userId)) {
+            if ($userId !== null && $this->isUserFlaggedForUpdate($userId)) {
                 $user = $userService->getUserById($userId);
                 $this->clearUserUpdateFlag($userId);
                 $this->updateWebSession($user, $creds->getAuthProvider());
@@ -259,7 +259,7 @@ class AuthenticationService extends Service {
     public function setRememberMe(array $user) {
         $app = Application::instance();
         $cookie = $app->getRememberMeCookie();
-        if (empty($cookie)) {
+        if ($cookie === null) {
             return;
         }
         $rawData = $cookie->getValue();
@@ -284,29 +284,38 @@ class AuthenticationService extends Service {
         $user = null;
 
         $cookie = $app->getRememberMeCookie();
-        if (!$cookie) goto end;
+        if (!$cookie) {
+            goto end;
+        }
 
         $rawData = $cookie->getValue();
-        if (empty($rawData)) goto end;
+        if (empty($rawData)) {
+            goto end;
+        }
 
-        if (strlen($rawData) < 64) goto cleanup;
+        if (strlen($rawData) < 64) {
+            goto cleanup;
+        }
 
         $data = CryptoOpenSSL::decrypt($rawData);
 
-        if (!$data)
+        if (!$data) {
             goto cleanup;
+        }
 
-        $data = unserialize($data);
-        if (!isset($data['expires']) or !isset($data['userId']))
+        $data = unserialize($data, ['allowed_classes' => false]);
+        if (!isset($data['expires']) or !isset($data['userId'])) {
             goto cleanup;
+        }
 
         $expires = Date::getDateTime($data['expires']);
-        if ($expires <= Date::getDateTime())
+        if ($expires <= Date::getDateTime()) {
             goto cleanup;
+        }
 
         try {
             $userService = UserService::instance();
-            $user = $userService->getUserById(intval($data['userId']));
+            $user = $userService->getUserById((int)$data['userId']);
         } catch (Exception $e) {
             Log::error("Error getting remember me user. {$e->getMessage()}");
         }
@@ -333,7 +342,7 @@ class AuthenticationService extends Service {
             //
             $redisService = ChatRedisService::instance();
             $sessionId = Session::getSessionId();
-            if (boolval($user['allowChatting'])) {
+            if ((bool)$user['allowChatting']) {
                 $redisService->setChatSession($credentials, $sessionId);
                 $redisService->sendRefreshUser($credentials);
             } else {
@@ -347,7 +356,7 @@ class AuthenticationService extends Service {
     public function removeWebSession() {
         if (Session::isStarted()) {
             $session = Session::instance();
-            if (!empty($session)) {
+            if ($session !== null) {
                 $app = Application::instance();
                 $app->getSessionCookie()->clearCookie();
                 $app->getRememberMeCookie()->clearCookie();
@@ -391,7 +400,7 @@ class AuthenticationService extends Service {
 
     private function setUserUpdateFlag(int $userId) {
         $cache = Application::getNsCache();
-        $cache->save("refreshusersession-$userId", time(), intval(ini_get('session.gc_maxlifetime')));
+        $cache->save("refreshusersession-$userId", time(), (int)ini_get('session.gc_maxlifetime'));
     }
 
     private function getEmotesForValidation(): array {

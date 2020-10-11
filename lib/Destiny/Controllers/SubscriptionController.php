@@ -142,7 +142,7 @@ class SubscriptionController {
             }
 
             $note = $params['message'] ?? '';
-            if (!empty($message)) {
+            if (!empty($note)) {
                 DiscordMessenger::send('Subscription cancelled', [
                     'fields' => [
                         ['title' => 'User', 'value' => DiscordMessenger::userLink($creds->getUserId(), $creds->getUsername()), 'short' => false],
@@ -518,8 +518,9 @@ class SubscriptionController {
         $userId = Session::getCredentials ()->getUserId ();
 
         $subscription = $subscriptionsService->findById ( $params ['subscriptionId'] );
-        if( empty ( $subscription ) || ($subscription['userId'] != $userId && $subscription['gifter'] != $userId) )
-            throw new Exception ( 'Invalid subscription record' );
+        if( empty ( $subscription ) || ($subscription['userId'] != $userId && $subscription['gifter'] != $userId) ) {
+            throw new Exception ('Invalid subscription record');
+        }
 
         $model->title = 'Subscription Error';
         $model->subscription = $subscription;

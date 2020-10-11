@@ -13,7 +13,7 @@ use PDO;
  */
 class ThemeService extends Service {
 
-    const BASE_THEME_ID = 1;
+    public const BASE_THEME_ID = 1;
 
     /**
      * @throws DBException
@@ -61,7 +61,7 @@ class ThemeService extends Service {
      */
     public function updateTheme(int $id, array $theme) {
         try {
-            if (boolval($theme['active'])) {
+            if ((bool)$theme['active']) {
                 $this->unsetActiveTheme();
             }
             $conn = Application::getDbConn();
@@ -83,7 +83,7 @@ class ThemeService extends Service {
      */
     public function insertTheme(array $theme): int {
         try {
-            if (boolval($theme['active'])) {
+            if ((bool)$theme['active']) {
                 $this->unsetActiveTheme();
             }
             $conn = Application::getDbConn();
@@ -95,7 +95,7 @@ class ThemeService extends Service {
                 'createdDate' => Date::getSqlDateTime(),
                 'modifiedDate' => Date::getSqlDateTime()
             ]);
-            $id = intval($conn->lastInsertId());
+            $id = (int)$conn->lastInsertId();
             $this->ensureOneActiveTheme();
             return $id;
         } catch (DBALException $e) {
@@ -107,7 +107,7 @@ class ThemeService extends Service {
      * @return array|false
      * @throws DBException
      */
-    function findThemeById(int $id) {
+    public function findThemeById(int $id) {
         try {
             $conn = Application::getDbConn();
             $stmt = $conn->prepare('SELECT t.* FROM themes t WHERE t.id = :id LIMIT 1');
@@ -122,7 +122,7 @@ class ThemeService extends Service {
     /**
      * @throws DBException
      */
-    function findAllThemes(): array {
+    public function findAllThemes(): array {
         try {
             $conn = Application::getDbConn();
             $stmt = $conn->prepare('SELECT * FROM themes');
@@ -136,13 +136,13 @@ class ThemeService extends Service {
     /**
      * @throws DBException
      */
-    function existsByPrefix(string $prefix): bool {
+    public function existsByPrefix(string $prefix): bool {
         try {
             $conn = Application::getDbConn();
             $stmt = $conn->prepare('SELECT COUNT(*) FROM themes t WHERE t.prefix = :prefix LIMIT 1');
             $stmt->bindValue('prefix', $prefix, PDO::PARAM_STR);
             $stmt->execute();
-            return intval($stmt->fetchColumn()) > 0;
+            return (int)$stmt->fetchColumn() > 0;
         } catch (DBALException $e) {
             throw new DBException("Error loading theme.", $e);
         }
@@ -152,7 +152,7 @@ class ThemeService extends Service {
      * @return array|false
      * @throws DBException
      */
-    function getActiveTheme() {
+    public function getActiveTheme() {
         try {
             $conn = Application::getDbConn();
             $stmt = $conn->prepare('SELECT t.* FROM themes t WHERE t.active = 1 LIMIT 1');

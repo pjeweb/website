@@ -28,7 +28,7 @@ abstract class AdminIntegrationController {
      */
     protected $index;
 
-    abstract function afterConstruct();
+    abstract public function afterConstruct();
 
     public function authorize(): string {
         $this->afterConstruct();

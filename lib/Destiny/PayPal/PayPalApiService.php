@@ -55,7 +55,7 @@ class PayPalApiService extends Service {
 
         try {
             $getRPPDetailsResponse = $paypalService->GetRecurringPaymentsProfileDetails($getRPPDetailsReq);
-            if (empty($getRPPDetailsResponse) || $getRPPDetailsResponse->Ack != 'Success') {
+            if ($getRPPDetailsResponse === null || $getRPPDetailsResponse->Ack != 'Success') {
                 throw new Exception ('Error retrieving payment profile status');
             }
         } catch (\Exception $e) {
@@ -111,7 +111,7 @@ class PayPalApiService extends Service {
 
         try {
             $createRPProfileResponse = $paypalService->CreateRecurringPaymentsProfile($createRPProfileReq);
-            if (!empty($createRPProfileResponse) && $createRPProfileResponse->Ack == 'Success') {
+            if ($createRPProfileResponse !== null && $createRPProfileResponse->Ack == 'Success') {
                 $paymentProfileId = $createRPProfileResponse->CreateRecurringPaymentsProfileResponseDetails->ProfileID;
             }
         } catch (\Exception $e) {
@@ -173,7 +173,7 @@ class PayPalApiService extends Service {
 
         try {
             $response = $paypalService->SetExpressCheckout($setECReq);
-            if (empty($response) || $response->Ack != 'Success') {
+            if ($response === null || $response->Ack != 'Success') {
                 throw new Exception("Error getting checkout response: " . $response->Errors->ShortMessage);
             }
             return $response->Token;
@@ -226,7 +226,7 @@ class PayPalApiService extends Service {
             $request = new SetExpressCheckoutReq();
             $request->SetExpressCheckoutRequest = $requestType;
             $response = $paypalService->SetExpressCheckout($request);
-            if (!empty($response) && $response->Ack == 'Success') {
+            if ($response !== null && $response->Ack == 'Success') {
                 return $response->Token;
             }
             throw new Exception($response->Errors->ShortMessage);
@@ -246,7 +246,7 @@ class PayPalApiService extends Service {
             $getExpressCheckoutReq = new GetExpressCheckoutDetailsReq();
             $getExpressCheckoutReq->GetExpressCheckoutDetailsRequest = new GetExpressCheckoutDetailsRequestType($token);
             $response = $paypalService->GetExpressCheckoutDetails($getExpressCheckoutReq);
-            if (!empty($response) && $response->Ack == 'Success') {
+            if ($response !== null && $response->Ack == 'Success') {
                 return $response;
             }
         } catch (\Exception $e) {
