@@ -1,5 +1,5 @@
 const webpack = require('webpack')
-const CleanWebpackPlugin = require('clean-webpack-plugin')
+const {CleanWebpackPlugin} = require('clean-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const ManifestPlugin = require('webpack-manifest-plugin')
 const fs = require('fs')
@@ -48,12 +48,13 @@ module.exports = {
     optimization: {
         minimize: true,
         runtimeChunk: 'single',
-        splitChunks: { cacheGroups },
+        splitChunks: {cacheGroups},
     },
     entry: entryPoints,
     output: {
         path: __dirname + '/static',
         filename: '[name].[contenthash].js',
+        publicPath: '/',
     },
     plugins: [
         new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), // cache|flairs|emotes
@@ -64,7 +65,7 @@ module.exports = {
         }),
         new MiniCssExtractPlugin({filename: '[name].[contenthash].css'}),
         new ManifestPlugin(),
-        { apply: c => c.hooks.afterEmit.tap('webpackManifestPlugin', covertManifestJsonToPhp) }
+        {apply: c => c.hooks.afterEmit.tap('webpackManifestPlugin', covertManifestJsonToPhp)}
     ],
     watchOptions: {
         ignored: /(node_modules)/
@@ -110,7 +111,7 @@ module.exports = {
         ]
     },
     resolve: {
-        alias: { jquery: 'jquery/src/jquery' },
+        alias: {jquery: 'jquery/src/jquery'},
         extensions: ['.js'],
         symlinks: false,
     },
