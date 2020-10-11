@@ -45,6 +45,7 @@ $info = $cache->fetch(TwitchWebHookService::CACHE_KEY_STREAM_STATUS);
             <div id="stream-status-preview">
                 <a href="/bigscreen" style="background-image: url('<?= Tpl::out($info['preview']) ?>');"></a>
                 <div class="dropdown">
+                <div class="dropdown">
                     <span class="dropdown-toggle fas fa-clone fa-flip-horizontal" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></span>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
                         <a class="dropdown-item popup" target="_blank" href="/embed/chat">Chat</a>
