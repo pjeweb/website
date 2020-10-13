@@ -33,6 +33,9 @@ config/config.local.php
 /config/*.pem
 /config/*.csr
 
+/data/mysql
+/data/redis
+
 /public/*.txt
 /public/files
 /public/*.html
