@@ -55,7 +55,7 @@ const updateStreamFrame = function () {
     }
 
     if (src !== '' && streamIFrameElement.getAttribute('src') !== src) { // avoids a flow issue when in
-        const newStreamIFrameElement = streamIFrameElement.clone()
+        const newStreamIFrameElement = streamIFrameElement.cloneNode()
         newStreamIFrameElement.setAttribute('src', src)
         streamIFrameElement.parentElement.replaceChild(newStreamIFrameElement, streamIFrameElement)
     }
