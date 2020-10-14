@@ -30,7 +30,10 @@ function onResizeStart(e) {
     e.preventDefault()
 
     const startClientX = e.clientX || e.originalEvent['touches'][0].clientX || 0
-    const startPosX = resizeBarElement.position().left
+    const resizeBarOffsetLeft = resizeBarElement.getBoundingClientRect().left + window.pageXOffset
+    const chatPanelOffsetLeft = chatPanelElement.getBoundingClientRect().left + window.pageXOffset
+    const startPosX = resizeBarOffsetLeft - chatPanelOffsetLeft
+
     const clientWidth = getLayoutWidth()
     resizeBarElement.classList.add('active')
 

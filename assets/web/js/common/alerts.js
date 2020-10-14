@@ -27,6 +27,11 @@ const show = function (alertElement) {
 }
 
 function createAndShowAlert(message,  title = 'Info', mod = 'info') {
+    if (!alertsRootElement) {
+        console.error('#alerts-container missing in DOM')
+        return
+    }
+
     const alertElement = document.createElement('div')
     alertElement.className = 'alert-container'
     alertElement.innerHTML = `
@@ -49,6 +54,8 @@ export function alertDanger(message) {
 }
 
 // show alerts already existing in DOM
-alertsRootElement.querySelectorAll('.alert-container').forEach(alertElement => {
-    show(alertElement)
-})
+if (alertsRootElement) {
+    alertsRootElement.querySelectorAll('.alert-container').forEach(alertElement => {
+        show(alertElement)
+    })
+}
