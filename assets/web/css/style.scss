@@ -780,6 +780,11 @@ body#bigscreen {
     position: relative;
     padding: 0;
   }
+
+  &.nochat #chat-panel {
+    display: none;
+  }
+
   #stream-panel {
     flex: 1;
   }
