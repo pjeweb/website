@@ -161,7 +161,7 @@ class UserService extends Service {
         try {
             $conn = Application::getDbConn();
             $stmt = $conn->prepare('
-                SELECT DISTINCT b.featureName AS `id` FROM dfl_users_features AS a
+                SELECT DISTINCT a.featureId, b.featureName AS `id` FROM dfl_users_features AS a
                 INNER JOIN dfl_features AS b ON (b.featureId = a.featureId)
                 WHERE userId = :userId
                 ORDER BY a.featureId ASC
