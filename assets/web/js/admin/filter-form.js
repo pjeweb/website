@@ -1,3 +1,5 @@
+import createEventListenerMatching from '../helpers/createEventListenerMatching'
+
 document.querySelectorAll('form.filter-form').forEach(function (formElement) {
     formElement.querySelectorAll('select').forEach(
         selectElement =>
@@ -34,37 +36,32 @@ document.querySelectorAll('form.filter-form').forEach(function (formElement) {
 
         let order = tableElement.getAttribute('data-order')
         const applyCaret = order => {
-            return order === 'ASC' ?
-                caretElement.classList.remove('fa-caret-down').classList.add('fa-caret-up') :
-                caretElement.classList.remove('fa-caret-up').classList.add('fa-caret-down')
+            const asc = order === 'ASC'
+            caretElement.classList[asc ? 'remove' : 'add']('fa-caret-down')
+            caretElement.classList[asc ? 'add' : 'remove']('fa-caret-up')
         }
 
-        tableElement.addEventListener('click', e => {
-            /** @var {HTMLElement} td */
-            const td = e.target
-            if (td.matches('td[data-sort]')) {
-                e.preventDefault()
+        tableElement.addEventListener('click', createEventListenerMatching('td[data-sort]', (e, td) => {
+            e.preventDefault()
 
-                if (td.classList.contains('active')) {
-                    order = order === 'ASC' ? 'DESC' : 'ASC'
-                }
-
-                const sort = td.getAttribute('data-sort')
-                formElement.querySelectorAll('input[name="sort"]').forEach(inputElement => {
-                    inputElement.value = sort
-                })
-                formElement.querySelectorAll('input[name="order"]').forEach(inputElement => {
-                    inputElement.value = order
-                })
-
-                formElement.submit()
+            if (td.classList.contains('active')) {
+                order = order === 'ASC' ? 'DESC' : 'ASC'
             }
-        })
+
+            const sort = td.getAttribute('data-sort')
+            formElement.querySelectorAll('input[name="sort"]').forEach(inputElement => {
+                inputElement.value = sort
+            })
+            formElement.querySelectorAll('input[name="order"]').forEach(inputElement => {
+                inputElement.value = order
+            })
+
+            formElement.submit()
+        }))
 
         applyCaret(order)
 
-        columnElement
-            .prepend(caretElement)
-            .addClass('active')
+        columnElement.prepend(caretElement)
+        columnElement.classList.add('active')
     })
 })

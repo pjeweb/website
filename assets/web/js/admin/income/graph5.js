@@ -41,46 +41,47 @@ export default function renderGraph5() {
         },
     })
 
-    const updateGraph = async function (currentDate) {
+    const updateGraph = function (currentDate) {
         const selectedDate = parse(format(currentDate, 'yyyy-MM-dd'), 'yyyy-MM-dd', new Date())
         const fromDate = startOfMonth(selectedDate)
         const toDate = endOfMonth(selectedDate)
 
-        let data = await fetch(`/admin/chart/finance/NewDonationsLastXDays.json?${new URLSearchParams({
-            fromDate: format(fromDate, 'YYYY-MM-DD'),
-            toDate: format(toDate, 'YYYY-MM-DD'),
+        fetch(`/admin/chart/finance/NewDonationsLastXDays.json?${new URLSearchParams({
+            fromDate: format(fromDate, 'yyyy-MM-dd'),
+            toDate: format(toDate, 'yyyy-MM-dd'),
         }).toString()}`)
             .then(response => response.json())
+            .then(data => {
+                const label = `Donations ${format(currentDate, 'MMMM yyyy')}`
+                const dataSet = []
+                const dataLabels = []
+                const dates = []
+                for (let m = fromDate; isBefore(m, toDate) || m.getTime() === toDate.getTime(); m = add(m, {days: 1})) {
+                    dates.push(format(m, 'yyyy-MM-dd'))
+                    dataLabels.push(format(m, 'd'))
 
-        const label = `Donations ${format(currentDate, 'MMMM yyyy')}`
-        const dataSet = []
-        const dataLabels = []
-        const dates = []
-        for (let m = fromDate; isBefore(m, toDate) || m.getTime() === toDate.getTime(); m = add(m, {days: 1})) {
-            dates.push(format(m, 'yyyy-MM-dd'))
-            dataLabels.push(format(m, 'd'))
+                    dataSet.push(0)
+                }
 
-            dataSet.push(0)
-        }
+                for (let i = 0; i < data.length; ++i) {
+                    const x = dates.indexOf(data[i].date)
+                    dataSet[x] = parseInt(data[i]['total'], 10)
+                }
 
-        for (let i = 0; i < data.length; ++i) {
-            const x = dates.indexOf(data[i].date)
-            dataSet[x] = parseInt(data[i]['total'], 10)
-        }
-
-        chart.label = label
-        chart.data.labels = dataLabels
-        chart.data.datasets = [{
-            label: label,
-            data: dataSet,
-            borderWidth: 0.4,
-            backgroundColor: 'rgba(220, 220, 220, 0.2)',
-            borderColor: 'rgba(220, 220, 220, 1)',
-            pointBorderColor: 'rgba(220, 220, 220, 1)',
-            pointBackgroundColor: '#fff',
-            pointBorderWidth: 1,
-        }]
-        chart.update()
+                chart.label = label
+                chart.data.labels = dataLabels
+                chart.data.datasets = [{
+                    label: label,
+                    data: dataSet,
+                    borderWidth: 0.4,
+                    backgroundColor: 'rgba(220, 220, 220, 0.2)',
+                    borderColor: 'rgba(220, 220, 220, 1)',
+                    pointBorderColor: 'rgba(220, 220, 220, 1)',
+                    pointBackgroundColor: '#fff',
+                    pointBorderWidth: 1,
+                }]
+                chart.update()
+            })
     }
 
     registerListener(updateGraph)

@@ -5,16 +5,17 @@ import {debounce} from 'throttle-debounce'
 const emoteSearchElement = document.getElementById('emote-search')
 if (emoteSearchElement) {
     const emoteGrid = document.getElementById('emote-grid')
-    const emotes = emoteGrid.find('.image-grid-item')
+    const emotes = emoteGrid.querySelector('.image-grid-item')
 
     const debounced = debounce(50, false, () => {
         const search = emoteSearchElement.value
         if (search != null && search.trim() !== '') {
-            emotes.each((i, v) => {
-                $(v).toggleClass('hidden', !(v.getAttribute('data-prefix').toLowerCase().indexOf(search.toLowerCase()) > -1))
+            emotes.forEach(emoteElement => {
+                const matches = emoteElement.getAttribute('data-prefix').toLowerCase().indexOf(search.toLowerCase()) > -1
+                emoteElement.classList[matches ? 'remove' : 'add']('hidden')
             })
         } else {
-            emotes.removeClass('hidden')
+            emotes.classList.remove('hidden')
         }
     })
     emoteSearchElement.addEventListener('keydown', e => debounced(e))

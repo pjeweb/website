@@ -9,7 +9,7 @@ import {getCurrentDate} from './dates'
 
 const days = 14
 
-export default async function renderGraph1() {
+export default function renderGraph1() {
     const graph = document.getElementById('graph1')
     if (!graph) {
         return
@@ -19,11 +19,12 @@ export default async function renderGraph1() {
     const fromDate = add(parse(format(getCurrentDate(), 'yyyy-MM-dd')), {days: -days})
     const toDate = parse(format(getCurrentDate(), 'yyyy-MM-dd'))
 
-    let data = await fetch(`/admin/chart/users/NewUsersLastXDays.json?${new URLSearchParams({
+    fetch(`/admin/chart/users/NewUsersLastXDays.json?${new URLSearchParams({
         fromDate: format(fromDate, 'yyyy-MM-dd'),
         toDate: format(toDate, 'yyyy-MM-dd'),
     }).toString()}`)
         .then(response => response.json())
-
-    renderBarChart(graph, label, prepareGraphData(data, 'total', days, 'days'))
+        .then(data => {
+            renderBarChart(graph, label, prepareGraphData(data, 'total', days, 'days'))
+        })
 }

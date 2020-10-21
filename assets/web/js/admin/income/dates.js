@@ -17,7 +17,7 @@ export function getCurrentDate() {
     return currDate
 }
 
-export function renderDates() {
+export function renderDateSelector() {
     const datesElement = document.getElementById('income-dates')
     const datesIn = datesElement.querySelector('span.date')
 

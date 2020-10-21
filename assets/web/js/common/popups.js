@@ -1,3 +1,5 @@
+import createEventListenerMatching from '../helpers/createEventListenerMatching'
+
 const popupDefaults = {
     height: 500,
     width: 420,
@@ -16,14 +18,10 @@ export const getPopupOptionsString = options => {
 }
 
 // Generic popup links
-document.body.addEventListener('click', function (e) {
-    /** @var {HTMLAnchorElement} linkElement */
-    const linkElement = e.target
-    if (linkElement.matches('a.popup')) {
-        e.preventDefault()
+document.body.addEventListener('click', createEventListenerMatching('a.popup', (e, linkElement) => {
+    e.preventDefault()
 
-        const href = linkElement.getAttribute('href')
-        const options = JSON.parse(linkElement.getAttribute('data-options'))
-        window.open(href, '_blank', getPopupOptionsString(options))
-    }
-})
+    const href = linkElement.getAttribute('href')
+    const options = JSON.parse(linkElement.getAttribute('data-options'))
+    window.open(href, '_blank', getPopupOptionsString(options))
+}))

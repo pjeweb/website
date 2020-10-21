@@ -8,4 +8,4 @@ document.querySelectorAll('.text-message textarea[maxlength]').forEach(inputElem
         indicatorElement.textContent = `${max - inputElement.value.length}`
     })
     inputElement.after(indicatorElement)
-});
+})

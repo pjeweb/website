@@ -9,7 +9,7 @@ import renderBarChart from './renderBarChart'
 
 const months = 12
 
-export default async function renderGraph2() {
+export default function renderGraph2() {
     const graph = document.getElementById('graph2')
     if (!graph) {
         return
@@ -19,11 +19,12 @@ export default async function renderGraph2() {
     const fromDate = add(parse(format(getCurrentDate(), 'yyyy-MM-dd')), {months: -months})
     const toDate = parse(format(getCurrentDate(), 'yyyy-MM-dd'))
 
-    let data = await fetch(`/admin/chart/users/NewUsersLastXMonths.json?${new URLSearchParams({
+    fetch(`/admin/chart/users/NewUsersLastXMonths.json?${new URLSearchParams({
         fromDate: format(fromDate, 'yyyy-MM-dd'),
         toDate: format(toDate, 'yyyy-MM-dd'),
     }).toString()}`)
         .then(response => response.json())
-
-    renderBarChart(graph, label, prepareGraphData(data, 'total', months, 'months'))
+        .then(data => {
+            renderBarChart(graph, label, prepareGraphData(data, 'total', months, 'months'))
+        })
 }

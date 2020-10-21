@@ -13,7 +13,7 @@ const show = function (alertElement) {
     }, AUTO_HIDE_TIME)
 
     // ensure limit
-    const alertElements = alertsRootElement.find('.alert-container')
+    const alertElements = Array.from(alertsRootElement.querySelectorAll('.alert-container'))
     const numberOfActiveAlerts = alertElements.length
     if (numberOfActiveAlerts > MAX_NUMBER_ALERTS) {
         const lastAlertElement = alertElements[numberOfActiveAlerts - 1]

@@ -14,7 +14,7 @@ if (emoteEditPreviewBtnElement) {
 
         fetch('/admin/emotes/preview', {
             method: 'POST',
-            body: new URLSearchParams({prefix, styles, imageId}).toString(),
+            body: new URLSearchParams({prefix, styles, imageId}),
         })
             .then(response => response.text())
             .then(html => {

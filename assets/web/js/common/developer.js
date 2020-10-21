@@ -2,7 +2,7 @@ if (document.body.id === 'developer') {
     document.getElementById('btn-create-app').addEventListener('click', e => {
         e.preventDefault()
 
-        const recaptchaElement = $('#recaptcha1')
+        const recaptchaElement = document.getElementById('recaptcha1')
         const form = e.target.closest('form')
         if (recaptchaElement.classList.contains('hidden')) {
             recaptchaElement.classList.remove('hidden')
@@ -14,7 +14,7 @@ if (document.body.id === 'developer') {
     document.getElementById('btn-create-key').addEventListener('click', e => {
         e.preventDefault()
 
-        const recaptchaElement = $('#recaptcha2')
+        const recaptchaElement = document.getElementById('recaptcha2')
         const form = e.target.closest('form')
         if (recaptchaElement.classList.contains('hidden')) {
             recaptchaElement.classList.remove('hidden')
@@ -23,24 +23,26 @@ if (document.body.id === 'developer') {
         }
     })
 
-    const formElement = document.getElementById('app-form')
-    const createSecretButtonElement = formElement.querySelector('#app-form-secret-create')
+    const createSecretButtonElement = document.getElementById('app-form-secret-create')
+    if (createSecretButtonElement) {
+        const formElement = document.getElementById('app-form')
 
-    formElement.querySelector('#app-form-secret-create').addEventListener('click', e => {
-        e.preventDefault()
+        createSecretButtonElement.addEventListener('click', e => {
+            e.preventDefault()
 
-        if (confirm('Are you sure? This will invalidate the previous secret.')) {
-            const id = createSecretButtonElement.getAttribute('data-id')
-            const secretInputElement = formElement.querySelector('input[name="secret"]')
+            if (confirm('Are you sure? This will invalidate the previous secret.')) {
+                const id = createSecretButtonElement.getAttribute('data-id')
+                const secretInputElement = formElement.querySelector('input[name="secret"]')
 
-            fetch('/profile/app/secret', {
-                method: 'POST',
-                body: new URLSearchParams({id}).toString()
-            })
-                .then(response => response.json())
-                .then(data => {
-                    secretInputElement.value = data.secret
+                fetch('/profile/app/secret', {
+                    method: 'POST',
+                    body: new URLSearchParams({id}).toString()
                 })
-        }
-    })
+                    .then(response => response.json())
+                    .then(data => {
+                        secretInputElement.value = data.secret
+                    })
+            }
+        })
+    }
 }

@@ -2,7 +2,7 @@ export const FADE_IN_ANIMATION_DURATION = 500
 export const FADE_OUT_ANIMATION_DURATION = 500
 
 export function fadeIn(element) {
-    element.style.display = 'block'
+    element.style.display = ''
     setTimeout(() => {
         element.classList.add('fade-in')
     }, 1)

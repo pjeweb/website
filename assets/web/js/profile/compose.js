@@ -1,6 +1,9 @@
 // TODO: replace modal, button from bootstrap/jquery with something else?
 import $ from 'jquery'
 
+import createEventListenerMatching from '../helpers/createEventListenerMatching'
+import {alertSuccess} from '../common/alerts'
+
 // COMPOSE
 const KEYCODE_SPACE = 32
 const KEYCODE_ENTER = 13
@@ -65,9 +68,16 @@ if (composeModalElement) {
 
         saveStateOnClose = true
 
+
+        const params = new URLSearchParams()
+        params.append('message', message)
+        recipients.forEach(recipient => {
+            params.append('recipients[]', recipient)
+        })
+
         fetch('/profile/messages/send', {
             method: 'POST',
-            body: new URLSearchParams({recipients, message}).toString(),
+            body: params,
         })
             .then(response => {
                 saveStateOnClose = false
@@ -83,7 +93,7 @@ if (composeModalElement) {
             })
             .then(data => {
                 if (data.success === true) {
-                    $(document).alertSuccess("Your message has been sent.", {delay: 3000})
+                    alertSuccess('Your message has been sent.', {delay: 3000})
                     composeModalElement.modal('hide')
                 } else {
                     modalMessageElement.style.display = ''
@@ -101,11 +111,11 @@ if (composeModalElement) {
         return str.split(' ').filter(e => e.search(/^[A-Z0-9_]{3,20}$/i) === 0)
     }
 
-    const addRecipientLabel = function (recipient, style = []) {
+    const addRecipientLabel = function (recipient, style = '') {
         const id = recipient.toLowerCase()
         if (!recipientsContainerElement.querySelector(`.recipient[data-recipient="${id}"]`)) {
             recipientsContainerElement.innerHTML +=
-                `<span class="recipient ${style.join(' ')}" data-recipient="${id}">` +
+                `<span class="recipient ${style}" data-recipient="${id}">` +
                 `<span class="recipient-name">${recipient}</span>` +
                 `<i class="glyphicon glyphicon-remove remove-recipient" title="Remove"></i>` +
                 `</span>`
@@ -114,7 +124,7 @@ if (composeModalElement) {
 
     const getRecipientLabels = function () {
         return (
-            recipientsContainerElement.querySelectorAll('.recipient')
+            Array.from(recipientsContainerElement.querySelectorAll('.recipient'))
                 .map(recipientElement => recipientElement.getAttribute('data-recipient'))
         )
     }
@@ -133,40 +143,38 @@ if (composeModalElement) {
         }
     })
 
-    composeModalElement.addEventListener('click', e => {
-        if (e.target.matches('.remove-recipient')) {
-            e.target.closest('.recipient').remove()
-        }
+    composeModalElement.addEventListener('click', createEventListenerMatching('.remove-recipient', (e, removeRecipientElement) => {
+        removeRecipientElement.closest('.recipient').remove()
+    }))
+
+    const composeRecipientsInputElement = composeModalElement.querySelector('input#compose-recipients')
+
+    composeRecipientsInputElement.addEventListener('change', e => {
+        splitRecipientString(e.target.value).forEach(addRecipientLabel)
+        recipientsElement.value = ''
     })
 
-    composeModalElement.addEventListener('change', e => {
-        if (e.target.matches('input#compose-recipients')) {
+    composeRecipientsInputElement.addEventListener('keypress', e => {
+        const delimiterCharRegex = /[;:,']/i
+        const key = e.which
+
+        if (key === KEYCODE_SPACE || key === KEYCODE_ENTER || delimiterCharRegex.test(String.fromCharCode(key))) {
+            e.preventDefault()
+            e.stopPropagation()
+
             splitRecipientString(e.target.value).forEach(addRecipientLabel)
             recipientsElement.value = ''
         }
+        recipientsElement.focus()
     })
 
-    composeModalElement.addEventListener('keypress', function (e) {
-        if (e.target.matches('input#compose-recipients')) {
-            const delimiterCharRegex = /[;:,']/i
-            const key = e.which
-
-            if (key === KEYCODE_SPACE || key === KEYCODE_ENTER || delimiterCharRegex.test(String.fromCharCode(key))) {
-                e.preventDefault()
-                e.stopPropagation()
-
-                splitRecipientString(e.target.value).forEach(addRecipientLabel)
-                recipientsElement.value = ''
-            }
-            recipientsElement.focus()
-        }
-    })
     closeButtonElement.addEventListener('click', () => {
         $(composeModalElement).modal('hide')
     })
+
     submitButtonElement.addEventListener('click', sendMessage)
 
-    messageElement.on('keydown', function (e) {
+    messageElement.addEventListener('keydown', function (e) {
         if (e.ctrlKey && e.keyCode === KEYCODE_ENTER) {
             e.preventDefault()
             e.stopPropagation()
@@ -174,28 +182,28 @@ if (composeModalElement) {
         }
     })
 
-    userGroupsElement.addEventListener('click', e => {
-        if (e.target.matches('.groups a')) {
-            addRecipientLabel(e.target.textContent, 'group')
-        }
-    })
+    userGroupsElement.addEventListener('click', createEventListenerMatching('.groups a', (e, groupsLinkElement) => {
+        addRecipientLabel(groupsLinkElement.textContent, 'group')
+    }))
 
     const inboxMessageReplyElement = document.getElementById('inbox-message-reply')
-    inboxMessageReplyElement.addEventListener('click', () => {
-        const $composeModalElement = $(composeModalElement)
+    if (inboxMessageReplyElement) {
+        inboxMessageReplyElement.addEventListener('click', () => {
+            const $composeModalElement = $(composeModalElement)
 
-        $composeModalElement.unbind('shown.bs.modal')
-        $composeModalElement.on('shown.bs.modal', () => {
-            composeModalElement.querySelector('textarea').focus()
+            $composeModalElement.unbind('shown.bs.modal')
+            $composeModalElement.on('shown.bs.modal', () => {
+                composeModalElement.querySelector('textarea').focus()
+            })
+
+            composeModalElement.querySelector('#composeLabel').textContent = 'Reply ...'
+            composeModalElement.querySelectorAll('.modal-recipients, .modal-settings, .modal-user-groups').forEach(element => {
+                element.style.display = 'none'
+            })
+
+            recipientsElement.value = ''
+            recipientsContainerElement.innerHTML = ''
+            addRecipientLabel(inboxMessageReplyElement.getAttribute('data-replyto'))
         })
-
-        composeModalElement.querySelector('#composeLabel').textContent = 'Reply ...'
-        composeModalElement.querySelectorAll('.modal-recipients, .modal-settings, .modal-user-groups').forEach(element => {
-            element.style.display = 'none'
-        })
-
-        recipientsElement.value = ''
-        recipientsContainerElement.innerHTML = ''
-        addRecipientLabel(inboxMessageReplyElement.getAttribute('data-replyto'))
-    })
+    }
 }
