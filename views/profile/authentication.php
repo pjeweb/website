@@ -1,4 +1,6 @@
 <?php
+namespace Destiny;
+use Destiny\Common\Config;
 use Destiny\Common\Utils\Date;
 use Destiny\Common\Utils\Tpl;
 ?>
@@ -66,21 +68,11 @@ use Destiny\Common\Utils\Tpl;
         <div class="modal-content">
             <div class="modal-body">
                 <div id="loginproviders">
-                    <a href="/profile/connect/twitch" class="btn btn-lg btn-twitch" tabindex="1" data-provider="twitch">
-                        <i class="fab fa-twitch"></i> Twitch
-                    </a>
-                    <a href="/profile/connect/google" class="btn btn-lg btn-google" tabindex="2" data-provider="google">
-                        <i class="fab fa-google"></i> Google
-                    </a>
-                    <a href="/profile/connect/twitter" class="btn btn-lg btn-twitter" tabindex="2" data-provider="twitter">
-                        <i class="fab fa-twitter"></i> Twitter
-                    </a>
-                    <a href="/profile/connect/reddit" class="btn btn-lg btn-reddit" tabindex="2" data-provider="reddit">
-                        <i class="fab fa-reddit"></i> Reddit
-                    </a>
-                    <a href="/profile/connect/discord" class="btn btn-lg btn-discord" tabindex="2" data-provider="discord">
-                        <i class="fab fa-discord"></i> Discord
-                    </a>
+                    <?php foreach (Config::$a['authProfiles'] as $i => $id): ?>
+                        <a href="/profile/connect/<?=$id?>" class="btn btn-lg btn-<?=$id?>" tabindex="<?=$i+1?>" data-provider="<?=$id?>">
+                            <i class="fab fa-<?=$id?>"></i> <?=ucwords($id)?>
+                        </a>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
