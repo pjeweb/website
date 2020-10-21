@@ -2077,6 +2077,20 @@ form#nameForm {
   }
 }
 
+.dgg-date-selector {
+  &__display {
+    display: inline-block;
+    min-width: 200px;
+    text-align: center;
+  }
+
+  &__button {
+    border: 0;
+    background: transparent;
+    color: inherit;
+  }
+}
+
 #users-table {
   thead tr {
     @include media-breakpoint-down(lg) {
