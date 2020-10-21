@@ -6,7 +6,7 @@ document.querySelectorAll('.btn-show-all').forEach(buttonElement => {
     buttonElement.addEventListener('click', e => {
         e.preventDefault()
 
-        $(document.body).find('.collapse').collapse('show')
+        $('.collapse').collapse('show')
     })
 })
 

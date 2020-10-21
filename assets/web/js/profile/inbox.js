@@ -1,6 +1,7 @@
 import {formatMessage} from './formatters'
 import {toggleShowMoreBtn} from './common/toggle-show-more-button'
 import {fadeIn, fadeOut} from '../helpers/fade'
+import createEventListenerMatching from '../helpers/createEventListenerMatching'
 import {applyMomentToElements} from '../common/datetime-format-and-update'
 
 // INBOX
@@ -36,47 +37,40 @@ if (inboxTableElement) {
     }
 
     const toggleSelectorElement = function (selectorElement) {
-        const activate = selectorElement.classList.contains('active')
+        const activate = !selectorElement.classList.contains('active')
         selectorElement.classList[activate ? 'add' : 'remove']('active')
-        selectorElement.querySelector('i').className = activate ? 'far fa-dot-circle' : 'far fa-circle'
+
+        const iconElement = selectorElement.querySelector('i')
+        if (iconElement) {
+            iconElement.className = activate ? 'far fa-dot-circle' : 'far fa-circle'
+        }
+
         toggleToolsBasedOnSelection()
     }
 
-    const toggleRowClick = function (e) {
-        const userid = e.target.getAttribute('data-id')
+    inboxTableElement.addEventListener('click', createEventListenerMatching('tbody tr', (e, tr) => {
+        const userid = tr.getAttribute('data-id')
         if (userid !== undefined) {
             e.preventDefault()
             e.stopPropagation()
             window.location.href = `/profile/messages/${encodeURIComponent(userid)}`
         }
-    }
+    }))
 
-    const toggleRowSelector = function (e) {
+    inboxTableElement.addEventListener('click', createEventListenerMatching('tbody td.selector', (e, selectorElement) => {
         e.preventDefault()
         e.stopPropagation()
 
-        toggleSelectorElement(e.target)
-    }
+        toggleSelectorElement(selectorElement)
+    }))
 
-    inboxTableElement.addEventListener('click', e => {
-        if (e.target.matches('tbody tr')) {
-            toggleRowClick(e)
-        } else if (e.target.matches('tbody td.selector')) {
-            toggleRowSelector(e)
-        }
-    })
+    inboxTableElement.addEventListener('mousedown', createEventListenerMatching('tbody tr', (e, tr) => {
+        tr.classList.add('pressed')
+    }))
 
-    inboxTableElement.addEventListener('mousedown', e => {
-        if (e.target.matches('tbody tr')) {
-            e.target.classList.add('pressed')
-        }
-    })
-
-    inboxTableElement.addEventListener('mouseup', e => {
-        if (e.target.matches('tbody tr')) {
-            e.target.classList.remove('pressed')
-        }
-    })
+    inboxTableElement.addEventListener('mouseup', createEventListenerMatching('tbody tr', (e, tr) => {
+        tr.classList.remove('pressed')
+    }))
 
     btnToggleElement.addEventListener('click', e => {
         e.preventDefault()
@@ -109,16 +103,14 @@ if (inboxTableElement) {
             '<div>This cannot be undone.</div>'
 
         const buttonElements = modalDeleteElement.querySelectorAll('button')
-        modalDeleteElement.addEventListener('click', e => {
-            if (e.target.matches('#deleteConversation')) {
-                buttonElements.forEach(buttonElement => {
-                    buttonElement.setAttribute('disabled', 'disabled')
-                })
+        modalDeleteElement.querySelector('#deleteConversation').addEventListener('click', e => {
+            buttonElements.forEach(buttonElement => {
+                buttonElement.setAttribute('disabled', 'disabled')
+            })
 
-                inboxToolsFormElement.setAttribute('action', '/profile/messages/delete')
-                inboxToolsFormElement.innerHTML += selectedIds.map(id => `<input type="hidden" name="selected[]" value="${id}">`).join('')
-                inboxToolsFormElement.submit()
-            }
+            inboxToolsFormElement.setAttribute('action', '/profile/messages/delete')
+            inboxToolsFormElement.innerHTML += selectedIds.map(id => `<input type="hidden" name="selected[]" value="${id}">`).join('')
+            inboxToolsFormElement.submit()
         })
 
         $(modalDeleteElement).modal('show')
@@ -152,12 +144,10 @@ if (inboxTableElement) {
         applyMomentToElements()
     }
 
-    const loadInbox = function (e) {
-        e.preventDefault()
-
+    const loadInbox = function () {
         fadeIn(inboxLoadingElement)
 
-        fetch('/api/messages/inbox?' + new URLSearchParams({s: `${start}`}).toString())
+        fetch(`/api/messages/inbox?${new URLSearchParams({s: `${start}`}).toString()}`)
             .then(response => response.json())
             .then(displayInbox)
     }

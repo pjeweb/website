@@ -1,3 +1,5 @@
+import createEventListenerMatching from '../helpers/createEventListenerMatching'
+
 const connectionsTableElement = document.getElementById('connections-content')
 
 if (connectionsTableElement) {
@@ -20,9 +22,14 @@ if (connectionsTableElement) {
     }
 
     const toggleSelectorElement = function (selectorElement) {
-        const activate = selectorElement.classList.contains('active')
+        const activate = !selectorElement.classList.contains('active')
         selectorElement.classList[activate ? 'add' : 'remove']('active')
-        selectorElement.querySelector('i').className = activate ? 'far fa-dot-circle' : 'far fa-circle'
+
+        const iconElement = selectorElement.querySelector('i')
+        if (iconElement) {
+            iconElement.className = activate ? 'far fa-dot-circle' : 'far fa-circle'
+        }
+
         toggleToolsBasedOnSelection()
     }
 
@@ -51,12 +58,12 @@ if (connectionsTableElement) {
         }
     })
 
-    connectionsTableElement.addEventListener('click', e => {
-        if (e.target.matches('tbody td.selector')) {
-            e.preventDefault()
-            e.stopPropagation()
+    const handleSelectorClick = createEventListenerMatching('tbody td.selector', (e, selectorElement) => {
+        e.preventDefault()
+        e.stopPropagation()
 
-            toggleSelectorElement(e.target)
-        }
+        toggleSelectorElement(selectorElement)
     })
+
+    connectionsTableElement.addEventListener('click', handleSelectorClick)
 }

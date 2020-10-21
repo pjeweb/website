@@ -1,6 +1,8 @@
 // TODO: replace modal from bootstrap/jquery with something else?
 import $ from 'jquery'
 
+import {alertDanger} from '../common/alerts'
+
 const userDetailsFormElement = document.querySelector('form#user-details')
 
 if (userDetailsFormElement) {
@@ -15,7 +17,7 @@ if (userDetailsFormElement) {
             .then(response => response.json())
             .then(response => {
                 if ('error' in response) {
-                    $(document).alertDanger(response.error.message, {delay: 3000})
+                    alertDanger(response.error.message, {delay: 3000})
                     return
                 }
 

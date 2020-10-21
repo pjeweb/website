@@ -1,9 +1,8 @@
 import {debounce} from 'throttle-debounce'
 
-const nameChangeFormElement = document.querySelector('form#nameForm')
-if (nameChangeFormElement) {
-    const nameChangeElement = document.querySelector('input#nameChange')
-
+const nameChangeElement = document.querySelector('input#nameChange')
+if (nameChangeElement) {
+    const nameChangeFormElement = document.querySelector('form#nameForm')
     const nameChangeAlertElement = document.querySelector('#nameChangeAlert')
 
     function alertContent(value) {
@@ -17,7 +16,6 @@ if (nameChangeFormElement) {
     const alertContentDefault = alertContent()
     const alertContentSuccess = '<i class="fas fa-fw fa-check-circle"></i>&nbsp;Click <strong>here</strong> to confirm your username!'
 
-
     let isValidName = false
     const onUsernameChange = function () {
         const username = nameChangeElement.value
@@ -26,21 +24,24 @@ if (nameChangeFormElement) {
             return
         }
 
-        fetch('/profile/usernamecheck?' + new URLSearchParams({username}).toString())
+        fetch(`/profile/usernamecheck?${new URLSearchParams({username}).toString()}`)
             .then(response => response.json())
             .then(data => {
                 if (data) {
                     if (data.success === true) {
-                        nameChangeAlertElement.removeClass('alert-danger').addClass('alert-success')
+                        nameChangeAlertElement.classList.remove('alert-danger')
+                        nameChangeAlertElement.classList.add('alert-success')
                         alertContent(alertContentSuccess)
                         isValidName = true
                     } else {
-                        nameChangeAlertElement.removeClass('alert-success').addClass('alert-danger')
+                        nameChangeAlertElement.classList.remove('alert-success')
+                        nameChangeAlertElement.classList.add('alert-danger')
                         const msg = data.error || 'Username already exists, try another!'
                         alertContent(`<i class="fas fa-fw fa-times-circle"></i>&nbsp;${msg}`)
                     }
                 } else {
-                    nameChangeAlertElement.removeClass('alert-success').addClass('alert-danger')
+                    nameChangeAlertElement.classList.remove('alert-success')
+                    nameChangeAlertElement.classList.add('alert-danger')
                 }
             })
     }

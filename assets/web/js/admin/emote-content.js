@@ -25,7 +25,7 @@ if (emoteContentElement) {
                 id: emoteId,
                 theme: inputTheme.value,
                 prefix: inputPrefix.value,
-            }).toString(),
+            }),
         })
             .then(response => {
                 if (response.ok) {

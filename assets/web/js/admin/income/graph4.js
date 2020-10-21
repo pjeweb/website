@@ -63,52 +63,53 @@ export default function renderGraph4() {
         },
     })
 
-    const updateGraph = async function (currentDate) {
+    const updateGraph = function (currentDate) {
         const selectedDate = parse(format(currentDate, 'yyyy-MM-dd'), 'yyyy-MM-dd', new Date())
         const fromDate = startOfMonth(selectedDate)
         const toDate = endOfMonth(selectedDate)
 
-        let data = await fetch(`/admin/chart/finance/NewTieredSubscribersLastXDays.json?${new URLSearchParams({
-            fromDate: format(fromDate, 'YYYY-MM-DD'),
-            toDate: format(toDate, 'YYYY-MM-DD'),
+        fetch(`/admin/chart/finance/NewTieredSubscribersLastXDays.json?${new URLSearchParams({
+            fromDate: format(fromDate, 'yyyy-MM-dd'),
+            toDate: format(toDate, 'yyyy-MM-dd'),
         }).toString()}`)
             .then(response => response.json())
+            .then(data => {
+                const dataSets = subscriberTiers.map(() => [])
+                const dataLabels = []
+                const dates = []
+                for (let m = fromDate; isBefore(m, toDate) || m.getTime() === toDate.getTime(); m = add(m, {days: 1})) {
+                    dates.push(format(m, 'yyyy-MM-dd'))
+                    dataLabels.push(format(m, 'd'))
 
-        const dataSets = subscriberTiers.map(() => [])
-        const dataLabels = []
-        const dates = []
-        for (let m = fromDate; isBefore(m, toDate) || m.getTime() === toDate.getTime(); m = add(m, {days: 1})) {
-            dates.push(format(m, 'yyyy-MM-dd'))
-            dataLabels.push(format(m, 'd'))
+                    dataSets.forEach(dataSet => {
+                        dataSet.push(0)
+                    })
+                }
 
-            dataSets.forEach(dataSet => {
-                dataSet.push(0)
+                for (let i = 0; i < data.length; ++i) {
+                    const x = dates.indexOf(data[i].date)
+                    if (x !== -1) {
+                        const tierLevel = parseInt(data[i]['subscriptionTier'], 10)
+                        dataSets[tierLevel] = parseInt(data[i]['total'], 10)
+                    }
+                }
+
+                chart.data.labels = dataLabels
+                chart.data.datasets = subscriberTiers.map((tier, i) => {
+                    const {label, color, backgroundColor, pointBackgroundColor} = tier
+
+                    return {
+                        label,
+                        data: dataSets[i],
+                        borderWidth: 0.4,
+                        backgroundColor,
+                        borderColor: color,
+                        pointBorderColor: color,
+                        pointBackgroundColor: pointBackgroundColor || color,
+                    }
+                })
+                chart.update()
             })
-        }
-
-        for (let i = 0; i < data.length; ++i) {
-            const x = dates.indexOf(data[i].date)
-            if (x !== -1) {
-                const tierLevel = parseInt(data[i]['subscriptionTier'], 10)
-                dataSets[tierLevel] = parseInt(data[i]['total'], 10)
-            }
-        }
-
-        chart.data.labels = dataLabels
-        chart.data.datasets = subscriberTiers.map((tier, i) => {
-            const {label, color, backgroundColor, pointBackgroundColor} = tier
-
-            return {
-                label,
-                data: dataSets[i],
-                borderWidth: 0.4,
-                backgroundColor,
-                borderColor: color,
-                pointBorderColor: color,
-                pointBackgroundColor: pointBackgroundColor || color,
-            }
-        })
-        chart.update()
     }
 
     registerListener(updateGraph)

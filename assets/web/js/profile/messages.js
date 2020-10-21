@@ -11,8 +11,8 @@ import {applyMomentToElements} from '../common/datetime-format-and-update'
 const messageTableElement = document.getElementById('message-list')
 if (messageTableElement) {
     const inboxToolsFormElement = document.querySelector('form#inbox-tools-form')
-    const userid = messageTableElement.data('userid')
-    const username = messageTableElement.data('username')
+    const userid = messageTableElement.getAttribute('data-userid')
+    const username = messageTableElement.getAttribute('data-username')
     const inboxLoadingElement = document.getElementById('inbox-loading')
     const btnShowMoreElement = document.getElementById('inbox-list-more')
     const btnDeleteElement = document.getElementById('inbox-delete-selected')
@@ -46,10 +46,11 @@ if (messageTableElement) {
 
     const displayMessages = function (data) {
         start += pageSize
-        messageTableElement.find('table#inbox-message-grid tbody').append((data.length ? data : []).map(renderMessage).join(''))
+        messageTableElement.querySelector('table#inbox-message-grid tbody').innerHTML += (data.length ? data : []).map(renderMessage).join('')
         toggleShowMoreBtn(btnShowMoreElement, data, pageSize)
-        inboxEmptyElement.toggle(start === pageSize && data.length === 0)
 
+        const isEmpty = start === pageSize && data.length === 0
+        inboxEmptyElement.style.display = isEmpty ? '' : 'none'
 
         fadeOut(inboxLoadingElement)
         applyMomentToElements()
@@ -63,28 +64,26 @@ if (messageTableElement) {
             .then(displayMessages)
     }
 
-    btnShowMoreElement.on('click', loadMessages)
+    btnShowMoreElement.addEventListener('click', loadMessages)
     loadMessages()
 
-    btnDeleteElement.on('click', () => {
-        const selectedIds = [messageTableElement.data('userid')]
+    btnDeleteElement.addEventListener('click', () => {
+        const selectedIds = [messageTableElement.getAttribute('data-userid')]
 
         modalDeleteElement.querySelector('.modal-body').innerHTML =
             `<div>Are you sure you want to delete this entire conversation?</div>` +
             '<div>This cannot be undone.</div>'
 
-        modalDeleteElement.addEventListener('click', e => {
-            if (e.target.matches('#deleteConversation')) {
-                inboxToolsFormElement.setAttribute('action', '/profile/messages/delete')
-                selectedIds.forEach(id => {
-                    const input = document.createElement('input')
-                    input.type = 'hidden'
-                    input.name = 'selected[]'
-                    input.value = id
-                    inboxToolsFormElement.append(input)
-                })
-                inboxToolsFormElement.submit()
-            }
+        modalDeleteElement.querySelector('#deleteConversation').addEventListener('click', () => {
+            inboxToolsFormElement.setAttribute('action', '/profile/messages/delete')
+            selectedIds.forEach(id => {
+                const input = document.createElement('input')
+                input.type = 'hidden'
+                input.name = 'selected[]'
+                input.value = id
+                inboxToolsFormElement.append(input)
+            })
+            inboxToolsFormElement.submit()
         })
 
         $(modalDeleteElement).modal('show')
