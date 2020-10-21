@@ -16,8 +16,14 @@ use Destiny\Common\Utils\Tpl;
 
     <section class="container">
         <h3 id="income-dates">
-            <span id="date-selector">
-                <a href='#'><i class='fas fa-arrow-left'></i></a> <span class='date'></span> <a href='#'><i class='fas fa-arrow-right'></i></a>
+            <span id="date-selector" class="dgg-date-selector">
+                <button role="button" class="dgg-date-selector__button dgg-date-selector__button--left js-dgg-date-selector-left">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <span class="dgg-date-selector__display js-dgg-date-selector-date"></span>
+                <button role="button" class="dgg-date-selector__button dgg-date-selector__button--right js-dgg-date-selector-right">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
             </span>
         </h3>
         <div class="row" id="income-graphs">

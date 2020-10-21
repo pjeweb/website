@@ -19,19 +19,19 @@ export function getCurrentDate() {
 
 export function renderDateSelector() {
     const datesElement = document.getElementById('income-dates')
-    const datesIn = datesElement.querySelector('span.date')
+    const dateDisplayElement = datesElement.querySelector('.js-dgg-date-selector-date')
 
-    datesElement.querySelector('.fa-arrow-left').addEventListener('click', () => {
+    datesElement.querySelector('.js-dgg-date-selector-left').addEventListener('click', () => {
         currDate = add(currDate, {months: -1})
-        datesIn.textContent = currDate.format('MMMM yyyy')
+        dateDisplayElement.textContent = format(currDate, 'MMMM yyyy')
         trigger()
     })
 
-    datesElement.querySelector('.fa-arrow-right').addEventListener('click', () => {
+    datesElement.querySelector('.js-dgg-date-selector-right').addEventListener('click', () => {
         currDate = add(currDate, {months: 1})
-        datesIn.textContent = format(currDate, 'MMMM yyyy')
+        dateDisplayElement.textContent = format(currDate, 'MMMM yyyy')
         trigger()
     })
 
-    datesIn.textContent = format(currDate, 'MMMM yyyy')
+    dateDisplayElement.textContent = format(currDate, 'MMMM yyyy')
 }
